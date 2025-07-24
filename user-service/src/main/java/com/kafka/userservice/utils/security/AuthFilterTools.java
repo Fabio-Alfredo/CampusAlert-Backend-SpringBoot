@@ -1,6 +1,8 @@
-package com.kafka.userservice.utils.token.security;
+package com.kafka.userservice.utils.security;
 
 import com.kafka.userservice.domain.enums.TypeToken;
+import com.kafka.userservice.domain.models.User;
+import com.kafka.userservice.services.contract.UserService;
 import com.kafka.userservice.utils.token.factory.TokenProviderFactory;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -18,9 +20,11 @@ import java.io.IOException;
 public class AuthFilterTools extends OncePerRequestFilter {
 
     private final TokenProviderFactory tokenProviderFactory;
+    private final UserService userService;
 
-    public AuthFilterTools(TokenProviderFactory tokenProviderFactory) {
+    public AuthFilterTools(TokenProviderFactory tokenProviderFactory, UserService userService) {
         this.tokenProviderFactory = tokenProviderFactory;
+        this.userService = userService;
     }
 
     @Override
@@ -43,7 +47,12 @@ public class AuthFilterTools extends OncePerRequestFilter {
             System.out.println("Bearer String not found");
         }
         if(token!= null && email !=null  && SecurityContextHolder.getContext().getAuthentication() == null){
-            
+            User user = userService.findByEmail(email);
+            if(user !=null){
+
+            }else{
+                System.out.println("User not found");
+            }
         }
     }
 }
