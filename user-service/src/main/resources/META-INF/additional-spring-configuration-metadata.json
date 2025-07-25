@@ -19,5 +19,10 @@
       "name": "jwt.reset.password.expiration",
       "type": "java.lang.String",
       "description": "Description for jwt.reset.password.expiration."
+    },
+    {
+      "name": "auth.roles.default-role",
+      "type": "java.lang.String",
+      "description": "Description for auth.roles.default-role."
     }
   ] }
