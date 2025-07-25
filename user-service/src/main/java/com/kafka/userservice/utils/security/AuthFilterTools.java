@@ -56,7 +56,7 @@ public class AuthFilterTools extends OncePerRequestFilter {
             if(user !=null){
                 boolean isValid = tokenService.isValidToken(user, TypeToken.AUTH_TOKEN, token);
                 if(isValid){
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, null);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request)
