@@ -30,4 +30,5 @@ public class Token {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private User user;
+
 }

@@ -7,6 +7,7 @@ import com.kafka.userservice.repositories.TokenRepository;
 import com.kafka.userservice.services.contract.TokenService;
 import com.kafka.userservice.utils.token.factory.TokenProviderFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isValidToken(User user, TypeToken type, String token) {
         try {
             cleanTokens(type, user);
@@ -38,6 +40,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void cleanTokens(TypeToken type, User user) {
         List<Token> tokens = tokenRepository.findByTypeTokenAndUserAndCanActive(type, user, true);
 

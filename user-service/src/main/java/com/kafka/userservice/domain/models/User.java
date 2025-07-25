@@ -15,11 +15,12 @@ import java.util.UUID;
 @Table(name="users")
 public class User implements UserDetails {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(nullable = false, unique = true)
-    private String username;
+    private String userName;
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -44,6 +45,11 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.userName;
     }
 
     @Override
