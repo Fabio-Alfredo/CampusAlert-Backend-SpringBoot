@@ -1,1 +1,23 @@
-{ "properties": [ ] }
+{
+  "properties": [
+    {
+      "name": "jwt.security.auth.secret-key",
+      "type": "java.lang.String",
+      "description": "Description for jwt.security.auth.secret-key."
+    },
+    {
+      "name": "jwt.security.auth.expiration",
+      "type": "java.lang.String",
+      "description": "Description for jwt.security.auth.expiration."
+    },
+    {
+      "name": "jwt.reset.password.secret-key",
+      "type": "java.lang.String",
+      "description": "Description for jwt.reset.password.secret-key."
+    },
+    {
+      "name": "jwt.reset.password.expiration",
+      "type": "java.lang.String",
+      "description": "Description for jwt.reset.password.expiration."
+    }
+  ] }

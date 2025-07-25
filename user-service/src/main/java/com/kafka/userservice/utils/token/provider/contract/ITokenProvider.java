@@ -7,6 +7,6 @@ public interface ITokenProvider {
     TypeToken supportedTypeToken();
     String generateToken(User user);
     String getEmailFromToken(String token);
-    boolean validateToken(String token, User user);
+    boolean validateToken(String token);
 
 }

@@ -58,7 +58,7 @@ public class ResetPasswordTokenProvider implements ITokenProvider {
     }
 
     @Override
-    public boolean validateToken(String token, User user) {
+    public boolean validateToken(String token) {
         try{
             JwtParser parser = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))

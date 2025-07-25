@@ -5,6 +5,7 @@ import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.repositories.TokenRepository;
 import com.kafka.userservice.services.contract.TokenService;
+import com.kafka.userservice.utils.token.factory.TokenProviderFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +14,11 @@ import java.util.List;
 public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
+    private final TokenProviderFactory tokenProviderFactory;
 
-    public TokenServiceImpl(TokenRepository tokenRepository) {
+    public TokenServiceImpl(TokenRepository tokenRepository, TokenProviderFactory tokenProviderFactory) {
         this.tokenRepository = tokenRepository;
+        this.tokenProviderFactory = tokenProviderFactory;
     }
 
     @Override
@@ -36,6 +39,13 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void cleanTokens(TypeToken type, User user) {
+        List<Token> tokens = tokenRepository.findByTypeTokenAndUserAndCanActive(type, user, true);
 
+        for(Token t: tokens){
+           if(!tokenProviderFactory.of(TypeToken.AUTH_TOKEN).validateToken(t.getToken())){
+               t.setCanActive(false);
+               tokenRepository.save(t);
+           }
+        }
     }
 }
