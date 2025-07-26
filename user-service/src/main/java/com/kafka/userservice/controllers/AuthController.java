@@ -1,10 +1,12 @@
 package com.kafka.userservice.controllers;
 
+import com.kafka.userservice.domain.dtos.GeneralResponse;
 import com.kafka.userservice.domain.dtos.LocalAuthDto;
 import com.kafka.userservice.domain.dtos.RegisterUserDto;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.services.contract.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,22 +24,22 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody @Valid RegisterUserDto userDto){
+    public ResponseEntity<GeneralResponse> registerUser(@RequestBody @Valid RegisterUserDto userDto){
         try{
            userService.registerUser(userDto);
-           return ResponseEntity.ok("Usuario registrado con exito");
+           return GeneralResponse.getResponse(HttpStatus.CREATED, "Usuario registrado con exito");
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Error al registrar el usuario: "+e.getMessage());
+            return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error al registrar usuario: "+e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid LocalAuthDto loginLocal){
+    public ResponseEntity<GeneralResponse> loginUser(@RequestBody @Valid LocalAuthDto loginLocal){
         try{
             Token token = userService.localAuth(loginLocal);
-            return ResponseEntity.ok("Has iniciado sesion con exito: "+token.getToken());
+            return GeneralResponse.getResponse(HttpStatus.CREATED, "Has iniciado sesion con exito", token.getToken());
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Error al iniciar sesion: "+e.getMessage());
+            return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error al iniciar sesion: "+e.getMessage());
         }
     }
 
