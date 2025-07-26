@@ -3,6 +3,7 @@ package com.kafka.userservice.controllers;
 import com.kafka.userservice.domain.dtos.GeneralResponse;
 import com.kafka.userservice.domain.dtos.LocalAuthDto;
 import com.kafka.userservice.domain.dtos.RegisterUserDto;
+import com.kafka.userservice.domain.dtos.TokenDto;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.services.contract.UserService;
 import jakarta.validation.Valid;
@@ -37,7 +38,7 @@ public class AuthController {
     public ResponseEntity<GeneralResponse> loginUser(@RequestBody @Valid LocalAuthDto loginLocal){
         try{
             Token token = userService.localAuth(loginLocal);
-            return GeneralResponse.getResponse(HttpStatus.CREATED, "Has iniciado sesion con exito", token.getToken());
+            return GeneralResponse.getResponse(HttpStatus.CREATED, "Has iniciado sesion con exito",new TokenDto(token.getToken()));
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error al iniciar sesion: "+e.getMessage());
         }
