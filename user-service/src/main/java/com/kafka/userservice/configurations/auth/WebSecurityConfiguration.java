@@ -52,7 +52,7 @@ public class WebSecurityConfiguration {
         http.httpBasic(withDefaults()).csrf(csrf->csrf.disable());
 
         http.authorizeHttpRequests(auth->
-                auth.requestMatchers("/api/auth/register").permitAll()
+                auth.requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
         );
 

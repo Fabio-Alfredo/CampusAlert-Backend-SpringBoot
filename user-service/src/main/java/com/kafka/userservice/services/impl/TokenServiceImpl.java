@@ -7,6 +7,7 @@ import com.kafka.userservice.repositories.TokenRepository;
 import com.kafka.userservice.services.contract.TokenService;
 import com.kafka.userservice.utils.token.factory.TokenProviderFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -49,6 +50,22 @@ public class TokenServiceImpl implements TokenService {
                t.setCanActive(false);
                tokenRepository.save(t);
            }
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Token registerToken(User user, TypeToken type) {
+        try{
+            cleanTokens(type, user);
+            String stringToken = tokenProviderFactory.of(type).generateToken(user);
+            Token token = new Token(stringToken, type, user);
+
+            tokenRepository.save(token);
+
+            return token;
+        }catch (Exception e){
+            throw new RuntimeException("Error al generar el token: "+ e.getMessage());
         }
     }
 }
