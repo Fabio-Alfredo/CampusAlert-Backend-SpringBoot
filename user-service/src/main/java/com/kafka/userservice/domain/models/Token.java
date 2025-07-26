@@ -14,7 +14,7 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
+    @Column( length = 1024, nullable = false)
     private String token;
     @Column(nullable = false)
     private TypeToken typeToken;

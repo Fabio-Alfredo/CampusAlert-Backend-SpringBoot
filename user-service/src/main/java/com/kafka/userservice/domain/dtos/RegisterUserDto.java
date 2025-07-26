@@ -13,6 +13,25 @@ public class RegisterUserDto {
     private String email;
     @NotEmpty(message = "La contraseña es requerida")
     private String password;
+    private String photo;
+
+    public RegisterUserDto(String email, String userName, String password, String photo) {
+        this.email = email;
+        this.userName = userName;
+        this.password = password;
+        this.photo = photo;
+    }
+
+    public RegisterUserDto() {
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
 
     public String getUserName() {
         return userName;

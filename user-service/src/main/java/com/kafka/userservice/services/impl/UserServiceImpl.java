@@ -2,6 +2,7 @@ package com.kafka.userservice.services.impl;
 
 import com.kafka.userservice.domain.dtos.LocalAuthDto;
 import com.kafka.userservice.domain.dtos.RegisterUserDto;
+import com.kafka.userservice.domain.dtos.TokenDto;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.TypeToken;
 import com.kafka.userservice.domain.models.Token;
@@ -30,12 +31,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final TokenService tokenService;
+    private final GoogleAuthService googleAuthService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthService googleAuthService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
         this.tokenService = tokenService;
+        this.googleAuthService = googleAuthService;
     }
 
     @Override
@@ -99,6 +102,35 @@ public class UserServiceImpl implements UserService {
             return  tokenService.registerToken(user, TypeToken.AUTH_TOKEN);
         }catch (Exception e){
             throw new RuntimeException("Error al iniciar sesion "+e.getMessage());
+        }
+    }
+
+    @Override
+    public Token googleAuth(TokenDto tokenDto) {
+        try{
+            RegisterUserDto userDto = googleAuthService.fetchGoogleUserData(tokenDto.getToken());
+            User user = userRepository.findByEmail(userDto.getEmail());
+
+            if (user == null) {
+                var role = roleService.findById(defaultRole);
+
+                user = new User();
+                user.setUserName(userDto.getUserName());
+                user.setEmail(userDto.getEmail());
+                user.setPhoto(userDto.getPhoto());
+                user.setAuthProvider(AuthProvider.GOOGLE_PROVIDER);
+                user.setRoles(List.of(role));
+                user = userRepository.save(user);
+            }
+
+
+            if (!AuthProvider.GOOGLE_PROVIDER.equals(user.getAuthProvider())) {
+                throw new RuntimeException("Usuario registrado con un método diferente");
+            }
+
+            return tokenService.registerToken(user, TypeToken.AUTH_TOKEN);
+        }catch (Exception e){
+            throw new RuntimeException("Error al iniciar sesion: "+e.getMessage());
         }
     }
 }

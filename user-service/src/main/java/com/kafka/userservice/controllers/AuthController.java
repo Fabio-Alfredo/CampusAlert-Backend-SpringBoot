@@ -6,6 +6,7 @@ import com.kafka.userservice.domain.dtos.RegisterUserDto;
 import com.kafka.userservice.domain.dtos.TokenDto;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.services.contract.UserService;
+import com.kafka.userservice.services.impl.GoogleAuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
+    private final GoogleAuthService googleAuthService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, GoogleAuthService googleAuthService) {
         this.userService = userService;
+        this.googleAuthService = googleAuthService;
     }
 
     @PostMapping("/register")
@@ -38,6 +41,16 @@ public class AuthController {
     public ResponseEntity<GeneralResponse> loginUser(@RequestBody @Valid LocalAuthDto loginLocal){
         try{
             Token token = userService.localAuth(loginLocal);
+            return GeneralResponse.getResponse(HttpStatus.CREATED, "Has iniciado sesion con exito",new TokenDto(token.getToken()));
+        }catch (Exception e){
+            return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error al iniciar sesion: "+e.getMessage());
+        }
+    }
+
+    @PostMapping("google-auth")
+    public ResponseEntity<GeneralResponse> loginUser(@RequestBody TokenDto tokenDto){
+        try{
+            Token token = userService.googleAuth(tokenDto);
             return GeneralResponse.getResponse(HttpStatus.CREATED, "Has iniciado sesion con exito",new TokenDto(token.getToken()));
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error al iniciar sesion: "+e.getMessage());
