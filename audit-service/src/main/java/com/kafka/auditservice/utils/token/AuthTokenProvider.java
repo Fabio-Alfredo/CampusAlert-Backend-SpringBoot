@@ -1,6 +1,5 @@
-package com.kafka.auditservice.utils;
+package com.kafka.auditservice.utils.token;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.auditservice.domain.dtos.auth.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class JwtTools {
+public class AuthTokenProvider implements ITokenProvider {
     @Value("${jwt.security.auth.secret-key}")
     private String secretKey;
 
