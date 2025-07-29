@@ -1,6 +1,7 @@
 package com.kafka.userservice.utils.token.provider.impl;
 
 import com.kafka.userservice.domain.enums.TypeToken;
+import com.kafka.userservice.domain.models.Role;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.utils.token.provider.contract.ITokenProvider;
 import io.jsonwebtoken.JwtParser;
@@ -31,6 +32,7 @@ public class AuthTokenProvider implements ITokenProvider {
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", TypeToken.AUTH_TOKEN);
         claims.put("id", user.getId());
+        claims.put("roles", user.getRoles().stream().map(Role::getId).toList());
 
         return Jwts.builder()
                 .claims(claims)
