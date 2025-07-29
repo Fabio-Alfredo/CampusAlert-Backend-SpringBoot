@@ -101,10 +101,10 @@ public class UserServiceImpl implements UserService {
 
     private void sendUserRegisterAudit(User user){
         UserRegisterAuditDto data = new UserRegisterAuditDto();
-        data.setEventType(KafkaEventTypes.REGISTER_USER);
+        data.setEventType(KafkaEventTypes.USER_REGISTERED);
         data.setPayload(user.getEmail() + " - " + user.getId());
 
-        kafkaTemplate.send(userAndAuditTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_USER, data));
+        kafkaTemplate.send(userAndAuditTopic, new KafkaEvents<>(KafkaEventTypes.USER_REGISTERED, data));
     }
 
     @Override
