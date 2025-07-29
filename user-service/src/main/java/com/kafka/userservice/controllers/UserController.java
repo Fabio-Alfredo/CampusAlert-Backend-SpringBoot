@@ -1,6 +1,6 @@
 package com.kafka.userservice.controllers;
 
-import com.kafka.userservice.domain.dtos.GeneralResponse;
+import com.kafka.userservice.domain.dtos.commons.GeneralResponse;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.services.contract.UserService;
 import org.springframework.http.HttpStatus;

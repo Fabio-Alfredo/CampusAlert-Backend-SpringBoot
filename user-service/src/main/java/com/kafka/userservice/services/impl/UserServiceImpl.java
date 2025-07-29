@@ -1,10 +1,9 @@
 package com.kafka.userservice.services.impl;
 
-import com.kafka.userservice.domain.dtos.LocalAuthDto;
-import com.kafka.userservice.domain.dtos.RegisterUserDto;
-import com.kafka.userservice.domain.dtos.ResetPasswordDto;
-import com.kafka.userservice.domain.dtos.TokenDto;
+import com.kafka.userservice.domain.dtos.auth.*;
+import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
 import com.kafka.userservice.domain.enums.AuthProvider;
+import com.kafka.userservice.domain.enums.KafkaEventTypes;
 import com.kafka.userservice.domain.enums.TypeToken;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
@@ -13,6 +12,7 @@ import com.kafka.userservice.services.contract.RoleService;
 import com.kafka.userservice.services.contract.TokenService;
 import com.kafka.userservice.services.contract.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${auth.roles.default-role}")
     private String defaultRole;
+    @Value("${kafka.topic.user-and-audit.name}")
+    private String userAndAuditTopic;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -35,14 +37,16 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
     private final GoogleAuthServiceImpl googleAuthService;
     private final EmailServiceImpl emailService;
+    private final KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
         this.tokenService = tokenService;
         this.googleAuthService = googleAuthService;
         this.emailService = emailService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -89,9 +93,18 @@ public class UserServiceImpl implements UserService {
            newUser.setAuthProvider(AuthProvider.LOCAL);
 
            userRepository.save(newUser);
+           sendUserRegisterAudit(newUser);
         }catch (Exception e){
             throw new RuntimeException("Erro al registrar el usuario");
         }
+    }
+
+    private void sendUserRegisterAudit(User user){
+        UserRegisterAuditDto data = new UserRegisterAuditDto();
+        data.setEventType(KafkaEventTypes.REGISTER_USER);
+        data.setPayload(user.getEmail() + " - " + user.getId());
+
+        kafkaTemplate.send(userAndAuditTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_USER, data));
     }
 
     @Override

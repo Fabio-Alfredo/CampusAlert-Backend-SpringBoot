@@ -29,5 +29,10 @@
       "name": "google.auth.google-id",
       "type": "java.lang.String",
       "description": "Description for google.auth.google-id."
+    },
+    {
+      "name": "kafka.topic.user-and-audit.name",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topic.user-and-audit.name."
     }
   ] }

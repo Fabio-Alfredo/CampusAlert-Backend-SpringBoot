@@ -1,4 +1,4 @@
-package com.kafka.userservice.domain.dtos;
+package com.kafka.userservice.domain.dtos.commons;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

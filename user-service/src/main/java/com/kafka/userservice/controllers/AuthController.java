@@ -1,6 +1,7 @@
 package com.kafka.userservice.controllers;
 
-import com.kafka.userservice.domain.dtos.*;
+import com.kafka.userservice.domain.dtos.auth.*;
+import com.kafka.userservice.domain.dtos.commons.GeneralResponse;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.services.contract.UserService;
 import com.kafka.userservice.services.impl.GoogleAuthServiceImpl;

@@ -1,4 +1,4 @@
-package com.kafka.userservice.domain.dtos;
+package com.kafka.userservice.domain.dtos.auth;
 
 public class ResetPasswordDto {
     private String token;

@@ -1,6 +1,6 @@
 package com.kafka.userservice.handlers;
 
-import com.kafka.userservice.domain.dtos.GeneralResponse;
+import com.kafka.userservice.domain.dtos.commons.GeneralResponse;
 import com.kafka.userservice.utils.error.ErrorTools;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
