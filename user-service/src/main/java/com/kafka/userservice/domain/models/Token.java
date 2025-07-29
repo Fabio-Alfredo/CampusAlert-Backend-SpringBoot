@@ -1,5 +1,6 @@
 package com.kafka.userservice.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kafka.userservice.domain.enums.TypeToken;
 import jakarta.persistence.*;
 
@@ -26,9 +27,8 @@ public class Token {
         this.timesTamp = Date.from(Instant.now());
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private User user;
-
 
     public Token(String token,TypeToken typeToken, User user) {
         this.token = token;

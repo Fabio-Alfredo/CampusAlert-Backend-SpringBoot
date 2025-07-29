@@ -8,6 +8,9 @@ import com.kafka.userservice.domain.dtos.TokenDto;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface UserService {
 
     User findByEmail(String email);
@@ -17,5 +20,9 @@ public interface UserService {
     Token googleAuth(TokenDto tokenDto);
     void forgotPassword(String email);
     void resetPassword(ResetPasswordDto resetPasswordDto);
+
+    User findById(UUID id);
+    List<User> findAllUsers();
+    User getUserAuthenticated();
 
 }

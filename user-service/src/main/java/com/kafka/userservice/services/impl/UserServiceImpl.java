@@ -13,12 +13,14 @@ import com.kafka.userservice.services.contract.RoleService;
 import com.kafka.userservice.services.contract.TokenService;
 import com.kafka.userservice.services.contract.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,7 +46,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User findByEmail(String email) {
         try{
             var user = userRepository.findByEmail(email);
@@ -58,7 +59,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User findByIdentifier(String identifier) {
         try {
             var user  = userRepository.findByEmailOrUserName(identifier, identifier);
@@ -167,4 +167,43 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Error al restablecer la contraseña: " + e.getMessage());
         }
     }
+
+    @Override
+    public User findById(UUID id) {
+        try{
+            var user = userRepository.findById(id).orElse(null);
+            if(user == null)
+                throw new Exception("El usuario no existe");
+
+            return user;
+        }catch (Exception e){
+            throw new RuntimeException("Error al buscar el usuario por ID: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        try{
+            List<User> users = userRepository.findAll();
+            if(users.isEmpty())
+                throw new Exception("No hay usuarios registrados");
+
+            return users;
+        }catch (Exception e ){
+            throw  new RuntimeException("Error al buscar todos los usuarios: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public User getUserAuthenticated() {
+        try{
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(user == null)
+                throw new Exception("No hay un usuario autenticado");
+            return user;
+        }catch (Exception e){
+            throw new RuntimeException("Error al obtener el usuario autenticado: " + e.getMessage());
+        }
+    }
+
 }

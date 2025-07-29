@@ -1,13 +1,17 @@
 package com.kafka.userservice.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="users")
@@ -29,10 +33,11 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private AuthProvider authProvider;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonIgnore
     private List<Token> tokens;
 
-    @ManyToMany(fetch =  FetchType.LAZY)
+    @ManyToMany(fetch =  FetchType.EAGER)
     @JoinTable(
             name="users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -42,7 +47,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        List<GrantedAuthority>authorities = new ArrayList<>();
+        authorities = roles.stream().map(role -> new SimpleGrantedAuthority(role.getId())).collect(Collectors.toList());
+        return authorities;
     }
 
     @Override
