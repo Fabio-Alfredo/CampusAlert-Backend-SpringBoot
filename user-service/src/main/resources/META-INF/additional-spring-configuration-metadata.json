@@ -24,5 +24,10 @@
       "name": "auth.roles.default-role",
       "type": "java.lang.String",
       "description": "Description for auth.roles.default-role."
+    },
+    {
+      "name": "google.auth.google-id",
+      "type": "java.lang.String",
+      "description": "Description for google.auth.google-id."
     }
   ] }

@@ -68,4 +68,18 @@ public class TokenServiceImpl implements TokenService {
             throw new RuntimeException("Error al generar el token: "+ e.getMessage());
         }
     }
+
+    @Override
+    public String getEmailFromToken(String token, TypeToken type) {
+        try{
+            String email = tokenProviderFactory.of(type).getEmailFromToken(token);
+            if(email == null)
+                throw new Exception("El token no es valido");
+            return email;
+        }catch (Exception e){
+            throw new RuntimeException("Error al obtener el email del token: " + e.getMessage());
+        }
+    }
+
+
 }

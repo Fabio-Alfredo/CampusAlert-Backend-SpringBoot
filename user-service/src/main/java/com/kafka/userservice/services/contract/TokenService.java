@@ -8,4 +8,5 @@ public interface TokenService {
     boolean isValidToken(User user, TypeToken type, String token);
     void cleanTokens(TypeToken type, User user);
     Token registerToken(User user, TypeToken type);
+    String getEmailFromToken(String token, TypeToken type);
 }

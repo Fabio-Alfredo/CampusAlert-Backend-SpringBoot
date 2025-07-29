@@ -2,6 +2,7 @@ package com.kafka.userservice.services.impl;
 
 import com.kafka.userservice.domain.dtos.LocalAuthDto;
 import com.kafka.userservice.domain.dtos.RegisterUserDto;
+import com.kafka.userservice.domain.dtos.ResetPasswordDto;
 import com.kafka.userservice.domain.dtos.TokenDto;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.TypeToken;
@@ -32,13 +33,15 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final TokenService tokenService;
     private final GoogleAuthService googleAuthService;
+    private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthService googleAuthService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthService googleAuthService, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
         this.tokenService = tokenService;
         this.googleAuthService = googleAuthService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -131,6 +134,38 @@ public class UserServiceImpl implements UserService {
             return tokenService.registerToken(user, TypeToken.AUTH_TOKEN);
         }catch (Exception e){
             throw new RuntimeException("Error al iniciar sesion: "+e.getMessage());
+        }
+    }
+
+    @Override
+    public void forgotPassword(String email) {
+        try{
+            var user = userRepository.findByEmail(email);
+            if(user == null || user.getAuthProvider() != AuthProvider.LOCAL)
+                throw new Exception("El usuario no existe o no es un usuario local");
+
+            String token = tokenService.registerToken(user, TypeToken.RESET_PASSWORD_TOKEN).getToken();
+            emailService.sendRecoveryEmail(
+                    user.getEmail(),
+                    token
+            );
+        }catch (Exception e){
+            throw new  RuntimeException("Error al enviar el correo de recuperacion: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDto resetPasswordDto) {
+        try{
+            String email = tokenService.getEmailFromToken(resetPasswordDto.getToken(), TypeToken.RESET_PASSWORD_TOKEN);
+            User user = userRepository.findByEmail(email);
+            if(user == null || !tokenService.isValidToken(user, TypeToken.RESET_PASSWORD_TOKEN, resetPasswordDto.getToken()))
+                throw new Exception("El token no es valido ");
+
+            user.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new RuntimeException("Error al restablecer la contraseña: " + e.getMessage());
         }
     }
 }
