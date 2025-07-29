@@ -1,7 +1,7 @@
 package com.kafka.userservice.services.impl;
 
+import com.kafka.userservice.services.contract.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 
@@ -9,11 +9,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService {
+public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
 
+    @Override
     public void sendRecoveryEmail(String to, String token) {
         try{
             String subject = "Recuperación de contraseña - Food Auth Service";

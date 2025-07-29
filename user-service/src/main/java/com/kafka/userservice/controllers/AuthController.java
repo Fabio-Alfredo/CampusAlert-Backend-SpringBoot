@@ -3,7 +3,7 @@ package com.kafka.userservice.controllers;
 import com.kafka.userservice.domain.dtos.*;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.services.contract.UserService;
-import com.kafka.userservice.services.impl.GoogleAuthService;
+import com.kafka.userservice.services.impl.GoogleAuthServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService userService;
-    private final GoogleAuthService googleAuthService;
+    private final GoogleAuthServiceImpl googleAuthService;
 
-    public AuthController(UserService userService, GoogleAuthService googleAuthService) {
+    public AuthController(UserService userService, GoogleAuthServiceImpl googleAuthService) {
         this.userService = userService;
         this.googleAuthService = googleAuthService;
     }

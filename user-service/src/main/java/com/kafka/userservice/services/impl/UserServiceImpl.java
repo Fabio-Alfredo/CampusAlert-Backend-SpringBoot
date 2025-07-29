@@ -8,7 +8,6 @@ import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.TypeToken;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
-import com.kafka.userservice.repositories.TokenRepository;
 import com.kafka.userservice.repositories.UserRepository;
 import com.kafka.userservice.services.contract.RoleService;
 import com.kafka.userservice.services.contract.TokenService;
@@ -32,10 +31,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final TokenService tokenService;
-    private final GoogleAuthService googleAuthService;
-    private final EmailService emailService;
+    private final GoogleAuthServiceImpl googleAuthService;
+    private final EmailServiceImpl emailService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthService googleAuthService, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
@@ -111,7 +110,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Token googleAuth(TokenDto tokenDto) {
         try{
-            RegisterUserDto userDto = googleAuthService.fetchGoogleUserData(tokenDto.getToken());
+            RegisterUserDto userDto = googleAuthService.fetchUserData(tokenDto.getToken());
             User user = userRepository.findByEmail(userDto.getEmail());
 
             if (user == null) {
