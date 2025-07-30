@@ -9,5 +9,10 @@
       "name": "jwt.security.auth.expiration",
       "type": "java.lang.String",
       "description": "Description for jwt.security.auth.expiration."
+    },
+    {
+      "name": "kafka.topic.user-and-audit.name",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topic.user-and-audit.name."
     }
   ] }
