@@ -14,5 +14,10 @@
       "name": "kafka.topic.user-and-audit.name",
       "type": "java.lang.String",
       "description": "Description for kafka.topic.user-and-audit.name."
+    },
+    {
+      "name": "kafka.topic.user-register.group-id",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topic.user-register.group-id."
     }
   ] }

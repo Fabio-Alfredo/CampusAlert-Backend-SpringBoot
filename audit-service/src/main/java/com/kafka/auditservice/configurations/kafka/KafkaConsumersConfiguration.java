@@ -28,7 +28,7 @@ public class KafkaConsumersConfiguration {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
         // Configuración del deserializador JSON
-        properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        properties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.kafka.auditservice.domain.dtos.audit");
         properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, KafkaEventsDto.class.getName());
 
         return properties;

@@ -7,11 +7,13 @@ import com.kafka.auditservice.domain.dtos.commons.KafkaEventsDto;
 import com.kafka.auditservice.services.contract.AuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserAuditListener {
+    
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAuditListener.class);
     private final ObjectMapper objectMapper;
@@ -24,7 +26,7 @@ public class UserAuditListener {
 
     @KafkaListener(
             topics = "#{'${kafka.topic.user-and-audit.name}'}",
-            groupId = "user-audit-service-group",
+            groupId = "${kafka.topic.user-register.group-id}",
             containerFactory = "userRegisterContainerFactory"
     )
     public void userAuditListener(KafkaEventsDto<UserAuditDto> kafkaEvents){
