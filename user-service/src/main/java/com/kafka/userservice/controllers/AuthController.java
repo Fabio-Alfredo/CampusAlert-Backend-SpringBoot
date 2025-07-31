@@ -4,6 +4,7 @@ import com.kafka.userservice.domain.dtos.auth.*;
 import com.kafka.userservice.domain.dtos.commons.GeneralResponse;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.services.contract.UserService;
+import com.kafka.userservice.services.impl.CloudinaryService;
 import com.kafka.userservice.services.impl.GoogleAuthServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthController {
 
     private final UserService userService;
+    private final CloudinaryService cloudinaryService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, CloudinaryService cloudinaryService) {
         this.userService = userService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @PostMapping("/register")
@@ -26,8 +29,10 @@ public class AuthController {
                                                        @RequestParam(value = "photoFile", required = false) MultipartFile photoFile){
         try{
             if(photoFile !=null && !photoFile.isEmpty()){
-                System.out.println("Subiendo foto de perfil: " + photoFile.getOriginalFilename());
+                String photoUrl = cloudinaryService.uploadFile(photoFile, userDto.getUserName());
+                userDto.setPhoto(photoUrl);
             }
+
            userService.registerUser(userDto);
            return GeneralResponse.getResponse(HttpStatus.CREATED, "Usuario registrado con exito");
         }catch (Exception e){
