@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface AuditService {
     void createAudit(UserAuditDto userAuditDto);
-    List<Audit>getAllAudits();
+    List<Audit>getAllAudits( String source_service);
 }

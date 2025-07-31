@@ -18,7 +18,7 @@ public class Audit {
     @Column(name = "event_type", nullable = false)
     private EventType eventType;
     @Column(name = "source_service", nullable = false)
-    private String source_service;
+    private String sourceService;
     @Column(name = "payload", nullable = false)
     private String payload;
 

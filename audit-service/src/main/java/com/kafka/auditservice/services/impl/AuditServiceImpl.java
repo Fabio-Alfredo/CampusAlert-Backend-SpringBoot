@@ -6,6 +6,7 @@ import com.kafka.auditservice.repositories.AuditRepository;
 import com.kafka.auditservice.services.contract.AuditService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,7 +24,7 @@ public class AuditServiceImpl implements AuditService {
             Audit newAudit = new Audit();
             newAudit.setEventType(userAuditDto.getEventType());
             newAudit.setPayload(userAuditDto.getPayload());
-            newAudit.setSource_service(userAuditDto.getSource_service());
+            newAudit.setSourceService(userAuditDto.getSource_service());
 
             auditRepository.save(newAudit);
         }catch (Exception e){
@@ -32,12 +33,15 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public List<Audit> getAllAudits() {
+    public List<Audit> getAllAudits( String source_service) {
         try{
-            var audits = auditRepository.findAll();
-            if (audits.isEmpty()) {
-                throw new RuntimeException("No audits found");
+            List<Audit> audits = new ArrayList<>();
+            if(source_service != null && !source_service.isEmpty()) {
+                 audits = auditRepository.findAllBySourceService(source_service);
+            }else{
+                 audits = auditRepository.findAll();
             }
+
             return audits;
         }catch (Exception e) {
             throw new RuntimeException("Error retrieving audits: " + e.getMessage());
