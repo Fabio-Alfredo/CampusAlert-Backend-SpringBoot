@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class AuthTokenProvider implements ITokenProvider {
@@ -37,19 +38,18 @@ public class AuthTokenProvider implements ITokenProvider {
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build();
 
-            Jws<Claims> jwsClaims = parser.parseSignedClaims(token);
-            Claims claims = jwsClaims.getPayload();
+            Claims claims = parser.parseSignedClaims(token).getPayload();
+            UserDto user = new UserDto();
+            user.setId(UUID.fromString(claims.get("id", String.class)));
+            user.setEmail(claims.getSubject());
 
-            String email = claims.getSubject();
-            List<String> roles = claims.get("roles", List.class);
-            UUID userId = claims.get("id", UUID.class);
+            List<String> roles = ((List<?>) claims.get("roles"))
+                    .stream()
+                    .map(Object::toString)
+                    .toList();
+            user.setRoles(roles);
 
-            UserDto userDto = new UserDto();
-            userDto.setEmail(email);
-            userDto.setRoles(roles);
-             userDto.setId(userId);
-
-            return userDto;
+            return user;
         } catch (Exception e) {
             return null;
         }

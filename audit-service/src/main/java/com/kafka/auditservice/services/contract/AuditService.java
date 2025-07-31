@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AuditService {
     void createAudit(UserAuditDto userAuditDto);
+    List<Audit>getAllAudits();
 }

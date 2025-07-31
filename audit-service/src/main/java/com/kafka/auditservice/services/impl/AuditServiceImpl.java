@@ -6,6 +6,8 @@ import com.kafka.auditservice.repositories.AuditRepository;
 import com.kafka.auditservice.services.contract.AuditService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AuditServiceImpl implements AuditService {
 
@@ -26,6 +28,19 @@ public class AuditServiceImpl implements AuditService {
             auditRepository.save(newAudit);
         }catch (Exception e){
             throw new RuntimeException("Error creating audit: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Audit> getAllAudits() {
+        try{
+            var audits = auditRepository.findAll();
+            if (audits.isEmpty()) {
+                throw new RuntimeException("No audits found");
+            }
+            return audits;
+        }catch (Exception e) {
+            throw new RuntimeException("Error retrieving audits: " + e.getMessage());
         }
     }
 }

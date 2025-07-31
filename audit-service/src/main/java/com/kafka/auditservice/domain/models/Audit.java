@@ -22,13 +22,13 @@ public class Audit {
     @Column(name = "payload", nullable = false)
     private String payload;
 
-    private LocalDateTime timestamp;
-
-    @PrePersist
-    public void prePersist() {
-        if (timestamp == null) {
-            timestamp = LocalDateTime.now();
-        }
-    }
+//    private LocalDateTime timestamp;
+//
+//    @PrePersist
+//    public void prePersist() {
+//        if (timestamp == null) {
+//            timestamp = LocalDateTime.now();
+//        }
+//    }
 
 }

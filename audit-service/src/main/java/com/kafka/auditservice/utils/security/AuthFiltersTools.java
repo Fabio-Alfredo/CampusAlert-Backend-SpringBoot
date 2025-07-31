@@ -30,8 +30,10 @@ public class AuthFiltersTools extends OncePerRequestFilter {
         String tokenHeader = request.getHeader("Authorization");
         String token = null;
         boolean isValid = false;
+
         if(tokenHeader !=null && tokenHeader.startsWith("Bearer ") && tokenHeader.length()>7){
             token = tokenHeader.substring(7);
+
             try{
                 isValid = iTokenProvider.isValidToken(token);
             }catch (IllegalArgumentException e){
@@ -41,6 +43,8 @@ public class AuthFiltersTools extends OncePerRequestFilter {
             }catch (ExpiredJwtException e){
                 System.out.println("Token expired: " + e.getMessage());
             }
+        }else{
+            System.out.println("Authorization header is missing or invalid");
         }
 
         if(token != null &&  isValid && SecurityContextHolder.getContext().getAuthentication() == null){
@@ -51,8 +55,14 @@ public class AuthFiltersTools extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            }else{
+                System.out.println("UserDto is null, token may be invalid or expired");
             }
+        }else{
+            System.out.println("Token is invalid or user is already authenticated");
         }
+
+
 
         filterChain.doFilter(request, response);
     }
