@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class KafkaEventsDto<T> {
-    private String eventType;
+    private EventType eventType;
     private T data;
 }

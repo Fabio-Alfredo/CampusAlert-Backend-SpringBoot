@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserAuditListener {
-    
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAuditListener.class);
     private final ObjectMapper objectMapper;
@@ -33,7 +33,7 @@ public class UserAuditListener {
         try{
             LOGGER.info("Received user audit event: {}", kafkaEvents.getEventType());
             switch (kafkaEvents.getEventType()){
-                case "USER_REGISTERED":
+                case USER_REGISTERED:
                     UserAuditDto userAuditDto = convertTo(kafkaEvents.getData(), UserAuditDto.class);
                     userAuditDto.setSource_service("User Service");
                     auditService.createAudit(userAuditDto);
