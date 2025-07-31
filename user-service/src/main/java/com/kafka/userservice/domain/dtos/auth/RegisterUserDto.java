@@ -2,6 +2,7 @@ package com.kafka.userservice.domain.dtos.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 
 public class RegisterUserDto {
@@ -13,6 +14,7 @@ public class RegisterUserDto {
     private String email;
     @NotEmpty(message = "La contraseña es requerida")
     private String password;
+
     private String photo;
 
     public RegisterUserDto(String email, String userName, String password, String photo) {
@@ -20,6 +22,7 @@ public class RegisterUserDto {
         this.userName = userName;
         this.password = password;
         this.photo = photo;
+
     }
 
     public RegisterUserDto() {

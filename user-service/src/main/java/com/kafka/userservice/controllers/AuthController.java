@@ -9,22 +9,25 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserService userService;
-    private final GoogleAuthServiceImpl googleAuthService;
 
-    public AuthController(UserService userService, GoogleAuthServiceImpl googleAuthService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.googleAuthService = googleAuthService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<GeneralResponse> registerUser(@RequestBody @Valid RegisterUserDto userDto){
+    public ResponseEntity<GeneralResponse> registerUser(@ModelAttribute @Valid RegisterUserDto userDto,
+                                                       @RequestParam(value = "photoFile", required = false) MultipartFile photoFile){
         try{
+            if(photoFile !=null && !photoFile.isEmpty()){
+                System.out.println("Subiendo foto de perfil: " + photoFile.getOriginalFilename());
+            }
            userService.registerUser(userDto);
            return GeneralResponse.getResponse(HttpStatus.CREATED, "Usuario registrado con exito");
         }catch (Exception e){
