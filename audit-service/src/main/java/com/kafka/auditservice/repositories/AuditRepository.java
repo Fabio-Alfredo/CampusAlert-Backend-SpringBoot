@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface AuditRepository extends JpaRepository<Audit, UUID> {
 
     List<Audit>findAllBySourceService(String source_service);
+
 }

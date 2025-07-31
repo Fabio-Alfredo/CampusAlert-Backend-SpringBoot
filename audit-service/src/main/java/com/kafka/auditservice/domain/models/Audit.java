@@ -1,10 +1,13 @@
 package com.kafka.auditservice.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kafka.auditservice.domain.enums.EventType;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -22,13 +25,12 @@ public class Audit {
     @Column(name = "payload", nullable = false)
     private String payload;
 
-//    private LocalDateTime timestamp;
-//
-//    @PrePersist
-//    public void prePersist() {
-//        if (timestamp == null) {
-//            timestamp = LocalDateTime.now();
-//        }
-//    }
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime timestamp;
+
+    @PrePersist
+    public void prePersist() {
+        this.timestamp = LocalDateTime.now();
+    }
 
 }
