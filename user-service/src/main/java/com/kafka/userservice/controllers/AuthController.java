@@ -17,23 +17,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthController {
 
     private final UserService userService;
-    private final CloudinaryService cloudinaryService;
 
-    public AuthController(UserService userService, CloudinaryService cloudinaryService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.cloudinaryService = cloudinaryService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<GeneralResponse> registerUser(@ModelAttribute @Valid RegisterUserDto userDto,
                                                        @RequestParam(value = "photoFile", required = false) MultipartFile photoFile){
         try{
-            if(photoFile !=null && !photoFile.isEmpty()){
-                String photoUrl = cloudinaryService.uploadFile(photoFile, userDto.getUserName());
-                userDto.setPhoto(photoUrl);
-            }
 
            userService.registerUser(userDto);
+           
+           if(photoFile != null && !photoFile.isEmpty()) {
+               userService.updatePhoto(photoFile, userDto.getEmail());
+           }
            return GeneralResponse.getResponse(HttpStatus.CREATED, "Usuario registrado con exito");
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error al registrar usuario: "+e.getMessage());

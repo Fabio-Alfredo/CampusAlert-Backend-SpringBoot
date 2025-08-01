@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,8 +39,9 @@ public class UserServiceImpl implements UserService {
     private final GoogleAuthServiceImpl googleAuthService;
     private final EmailServiceImpl emailService;
     private final KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate;
+    private final CloudinaryService cloudinaryService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate, CloudinaryService cloudinaryService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
@@ -47,6 +49,7 @@ public class UserServiceImpl implements UserService {
         this.googleAuthService = googleAuthService;
         this.emailService = emailService;
         this.kafkaTemplate = kafkaTemplate;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
@@ -179,6 +182,21 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }catch (Exception e){
             throw new RuntimeException("Error al restablecer la contraseña: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void updatePhoto(MultipartFile photoFile, String email) {
+        try{
+            var user = userRepository.findByEmail(email)
+            if(user == null)
+                throw new Exception("El usuario no existe");
+
+            String photoUrl = cloudinaryService.uploadFile(photoFile, user.getUserName());
+            user.setPhoto(photoUrl);
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new RuntimeException("Error al actualizar la foto de perfil: " + e.getMessage());
         }
     }
 
