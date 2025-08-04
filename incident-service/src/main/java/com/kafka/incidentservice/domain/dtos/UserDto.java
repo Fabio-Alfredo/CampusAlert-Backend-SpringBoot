@@ -1,9 +1,13 @@
 package com.kafka.incidentservice.domain.dtos;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 public class UserDto {
@@ -12,4 +16,9 @@ public class UserDto {
     private List<String> roles;
 
 
+    public List<GrantedAuthority>getAuthorities(){
+        List<GrantedAuthority>authorities = new ArrayList<>();
+       authorities = roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return authorities;
+    }
 }
