@@ -1,6 +1,6 @@
 package com.kafka.incidentservice.uitls.jwt;
 
-import com.kafka.incidentservice.domain.dtos.UserDto;
+import com.kafka.incidentservice.domain.dtos.auth.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;

@@ -35,6 +35,9 @@ public class Incident {
         if (incidentStatus == null) {
             incidentStatus = IncidentStatus.REPORTED;
         }
+        if(incidentType == null) {
+            incidentType = IncidentType.OTHER;
+        }
     }
 
 

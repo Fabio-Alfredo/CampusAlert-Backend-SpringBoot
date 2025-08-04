@@ -1,6 +1,6 @@
 package com.kafka.incidentservice.uitls.security;
 
-import com.kafka.incidentservice.domain.dtos.UserDto;
+import com.kafka.incidentservice.domain.dtos.auth.UserDto;
 import com.kafka.incidentservice.uitls.jwt.IAuthProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

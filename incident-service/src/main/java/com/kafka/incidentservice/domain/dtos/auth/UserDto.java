@@ -1,4 +1,4 @@
-package com.kafka.incidentservice.domain.dtos;
+package com.kafka.incidentservice.domain.dtos.auth;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
