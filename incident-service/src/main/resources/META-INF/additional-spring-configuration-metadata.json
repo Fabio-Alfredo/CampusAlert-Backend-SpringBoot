@@ -4,5 +4,10 @@
       "name": "jwt.security.auth.secret-key",
       "type": "java.lang.String",
       "description": "Description for jwt.security.auth.secret-key."
-  }
-] }
+    },
+    {
+      "name": "user.service.url",
+      "type": "java.lang.String",
+      "description": "Description for user.service.url."
+    }
+  ] }

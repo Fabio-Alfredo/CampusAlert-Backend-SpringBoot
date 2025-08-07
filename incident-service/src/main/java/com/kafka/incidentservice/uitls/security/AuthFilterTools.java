@@ -49,7 +49,7 @@ public class AuthFilterTools extends OncePerRequestFilter {
         if(token!= null && isValid && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDto user = authProvider.getUserFromToken(token);
             if(user!=null){
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
                authentication.setDetails(
                        new WebAuthenticationDetailsSource().buildDetails(request)
                );

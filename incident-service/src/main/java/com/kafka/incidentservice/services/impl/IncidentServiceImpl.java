@@ -4,18 +4,24 @@ import com.kafka.incidentservice.Repositories.IncidentRepository;
 import com.kafka.incidentservice.domain.dtos.auth.UserDto;
 import com.kafka.incidentservice.domain.dtos.incident.RegisterIncidentDto;
 import com.kafka.incidentservice.domain.models.Incident;
+import com.kafka.incidentservice.services.contract.IAuthService;
 import com.kafka.incidentservice.services.contract.IncidentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class IncidentServiceImpl implements IncidentService {
 
-    private final IncidentRepository incidentRepository;
 
-    public IncidentServiceImpl(IncidentRepository incidentRepository) {
+
+    private final IncidentRepository incidentRepository;
+    private final IAuthService authService;
+
+    public IncidentServiceImpl(IncidentRepository incidentRepository, IAuthService authService) {
         this.incidentRepository = incidentRepository;
+        this.authService = authService;
     }
 
     @Override
@@ -41,6 +47,27 @@ public class IncidentServiceImpl implements IncidentService {
             return incidents;
         }catch (Exception e){
             throw new RuntimeException("Error fetching incidents: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void assignSecurityInIncident(UUID security, UUID incidentId) {
+        try{
+
+            Incident incident = incidentRepository.findById(incidentId).orElse(null);
+            if(incident == null) {
+                throw new RuntimeException("Incident not found");
+            }
+
+            if(!authService.isValidUser(security)) {
+                throw new RuntimeException("Invalid security user");
+            }
+
+            incident.setAssignedTo(security);
+            incidentRepository.save(incident);
+
+        }catch (Exception e){
+            throw new RuntimeException("Error assigning security to incident: " + e.getMessage(), e);
         }
     }
 

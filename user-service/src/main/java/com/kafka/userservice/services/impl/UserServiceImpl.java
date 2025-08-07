@@ -201,6 +201,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean existUserById(UUID id) {
+        try{
+            User user = userRepository.findById(id).orElse(null);
+            return user != null;
+        }catch (Exception e ){
+            throw new RuntimeException("Error al verificar si el usuario existe: " + e.getMessage());
+        }
+    }
+
+    @Override
     public User findById(UUID id) {
         try{
             var user = userRepository.findById(id).orElse(null);

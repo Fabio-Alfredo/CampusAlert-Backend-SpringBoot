@@ -54,4 +54,14 @@ public class UserController {
             return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error retrieving authenticated user: " + e.getMessage());
         }
     }
+
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<GeneralResponse> existsUserById(@PathVariable UUID id) {
+        try {
+            boolean exists = userService.existUserById(id);
+            return GeneralResponse.getResponse(HttpStatus.OK, "User existence checked successfully", exists);
+        } catch (Exception e) {
+            return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error checking user existence: " + e.getMessage());
+        }
+    }
 }

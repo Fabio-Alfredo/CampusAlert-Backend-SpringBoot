@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/incidents")
@@ -43,6 +44,18 @@ public class IncidentController {
             return GeneralResponse.getResponse(HttpStatus.CREATED, "Incident created successfully");
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error creating incident: " + e.getMessage() + " Please try again later.");
+        }
+    }
+
+    @PutMapping("/assign-security")
+    public ResponseEntity<GeneralResponse>assignSecurityInIncident(@RequestParam("securityId") UUID securityId,
+                                                                    @RequestParam("incidentId") UUID incidentId){
+        try{
+
+            incidentService.assignSecurityInIncident(securityId, incidentId);
+            return GeneralResponse.getResponse(HttpStatus.OK, "Security assigned to incident successfully");
+        }catch (Exception e){
+            return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error assigning security: " + e.getMessage() + " Please try again later.");
         }
     }
 }

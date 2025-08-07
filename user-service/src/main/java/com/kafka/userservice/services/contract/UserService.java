@@ -22,6 +22,7 @@ public interface UserService {
     void forgotPassword(String email);
     void resetPassword(ResetPasswordDto resetPasswordDto);
     void updatePhoto(MultipartFile photoFile, String email);
+    Boolean existUserById(UUID id);
 
     User findById(UUID id);
     List<User> findAllUsers();
