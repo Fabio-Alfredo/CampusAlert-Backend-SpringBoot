@@ -188,7 +188,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePhoto(MultipartFile photoFile, String email) {
         try{
-            var user = userRepository.findByEmail(email)
+            var user = userRepository.findByEmail(email);
             if(user == null)
                 throw new Exception("El usuario no existe");
 

@@ -24,7 +24,7 @@ public class AuthTokenProviderImpl implements IAuthProvider{
                     .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                     .build();
             var claims = parser.parseSignedClaims(token).getPayload();
-            String type = claims.get("typ", String.class);
+            String type = claims.get("type", String.class);
             return "AUTH_TOKEN".equals(type);
         }catch (Exception e){
             return false;

@@ -7,6 +7,8 @@ import com.kafka.incidentservice.domain.models.Incident;
 import com.kafka.incidentservice.services.contract.IncidentService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class IncidentServiceImpl implements IncidentService {
 
@@ -31,4 +33,16 @@ public class IncidentServiceImpl implements IncidentService {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<Incident> findAllIncidents() {
+        try{
+            List<Incident> incidents = incidentRepository.findAll();
+            return incidents;
+        }catch (Exception e){
+            throw new RuntimeException("Error fetching incidents: " + e.getMessage(), e);
+        }
+    }
+
+
 }
