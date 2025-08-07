@@ -29,6 +29,8 @@ public class KafkaProvidersConfiguration {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
         properties.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
+        properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 
         return  properties;
     }
