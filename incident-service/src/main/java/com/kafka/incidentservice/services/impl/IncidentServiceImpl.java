@@ -26,7 +26,7 @@ public class IncidentServiceImpl implements IncidentService {
             incident.setReportedBy(user.getId());
 
             incidentRepository.save(incident);
-            
+
         }catch (Exception e) {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }
