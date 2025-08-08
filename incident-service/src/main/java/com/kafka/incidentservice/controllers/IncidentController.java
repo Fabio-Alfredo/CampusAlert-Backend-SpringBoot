@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,10 +53,21 @@ public class IncidentController {
                                                                     @RequestParam("incidentId") UUID incidentId){
         try{
 
-            incidentService.assignSecurityInIncident(securityId, incidentId);
-            return GeneralResponse.getResponse(HttpStatus.OK, "Security assigned to incident successfully");
+            var incident = incidentService.assignSecurityInIncident(securityId, incidentId);
+            return GeneralResponse.getResponse(HttpStatus.OK, "Security assigned to incident successfully", incident);
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error assigning security: " + e.getMessage() + " Please try again later.");
+        }
+    }
+
+    @PutMapping("/update-status")
+    public ResponseEntity<GeneralResponse>updateStatusToIncident(@RequestParam("status") String status,
+                                                                 @RequestParam("incidentId") UUID incidentId){
+        try{
+            var incident = incidentService.updateStatus(incidentId, status);
+            return GeneralResponse.getResponse(HttpStatus.OK, "New Status assigned to incident is successfully", incident);
+        }catch (Exception e){
+            return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error assigning new status: " + e.getMessage() + " Please try again later.");
         }
     }
 }

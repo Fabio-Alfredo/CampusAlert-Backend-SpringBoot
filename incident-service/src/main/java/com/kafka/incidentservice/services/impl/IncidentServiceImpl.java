@@ -3,6 +3,7 @@ package com.kafka.incidentservice.services.impl;
 import com.kafka.incidentservice.Repositories.IncidentRepository;
 import com.kafka.incidentservice.domain.dtos.auth.UserDto;
 import com.kafka.incidentservice.domain.dtos.incident.RegisterIncidentDto;
+import com.kafka.incidentservice.domain.enums.IncidentStatus;
 import com.kafka.incidentservice.domain.models.Incident;
 import com.kafka.incidentservice.services.contract.IAuthService;
 import com.kafka.incidentservice.services.contract.IncidentService;
@@ -51,7 +52,7 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public void assignSecurityInIncident(UUID security, UUID incidentId) {
+    public Incident assignSecurityInIncident(UUID security, UUID incidentId) {
         try{
 
             Incident incident = incidentRepository.findById(incidentId).orElse(null);
@@ -65,9 +66,25 @@ public class IncidentServiceImpl implements IncidentService {
 
             incident.setAssignedTo(security);
             incidentRepository.save(incident);
-
+            return incident;
         }catch (Exception e){
             throw new RuntimeException("Error assigning security to incident: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Incident updateStatus(UUID incidentId, String status) {
+        try{
+            var incident = incidentRepository.findById(incidentId).orElse(null);
+            if(incident == null)
+                throw new RuntimeException("Incident not found");
+            IncidentStatus validStatus = IncidentStatus.fromString(status);
+            incident.setIncidentStatus(validStatus);
+
+            return incidentRepository.save(incident);
+
+        }catch (Exception e){
+            throw new RuntimeException("Error update status to incident: "+e.getMessage());
         }
     }
 
