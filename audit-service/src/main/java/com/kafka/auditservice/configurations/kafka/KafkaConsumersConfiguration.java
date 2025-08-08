@@ -1,6 +1,6 @@
 package com.kafka.auditservice.configurations.kafka;
 
-import com.kafka.auditservice.domain.dtos.audit.UserAuditDto;
+import com.kafka.auditservice.domain.dtos.audit.EventAuditDto;
 import com.kafka.auditservice.domain.dtos.commons.KafkaEventsDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -34,8 +34,9 @@ public class KafkaConsumersConfiguration {
         return properties;
     }
 
+    //Para topic de usuario
     @Bean
-    ConsumerFactory<String, KafkaEventsDto<UserAuditDto>>userRegisterFactory(){
+    ConsumerFactory<String, KafkaEventsDto<EventAuditDto>>userRegisterFactory(){
         return  new DefaultKafkaConsumerFactory<>(
                 consumersConfig(),
                 new StringDeserializer(),
@@ -45,10 +46,12 @@ public class KafkaConsumersConfiguration {
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, KafkaEventsDto<UserAuditDto>>userRegisterContainerFactory(){
-        ConcurrentKafkaListenerContainerFactory<String, KafkaEventsDto<UserAuditDto>> factory =
+    ConcurrentKafkaListenerContainerFactory<String, KafkaEventsDto<EventAuditDto>>userRegisterContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, KafkaEventsDto<EventAuditDto>> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(userRegisterFactory());
         return factory;
     }
+
+
 }

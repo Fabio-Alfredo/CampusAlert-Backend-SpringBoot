@@ -28,7 +28,6 @@ public class AuthController {
         try{
 
            userService.registerUser(userDto);
-
            if(photoFile != null && !photoFile.isEmpty()) {
                userService.updatePhoto(photoFile, userDto.getEmail());
            }

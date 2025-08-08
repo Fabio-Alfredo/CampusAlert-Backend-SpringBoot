@@ -19,5 +19,15 @@
       "name": "kafka.topic.user-register.group-id",
       "type": "java.lang.String",
       "description": "Description for kafka.topic.user-register.group-id."
+    },
+    {
+      "name": "kafka.topic.incident-and-audit.name",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topic.incident-and-audit.name."
+    },
+    {
+      "name": "kafka.topic.incident-register.group-id",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topic.incident-register.group-id."
     }
   ] }

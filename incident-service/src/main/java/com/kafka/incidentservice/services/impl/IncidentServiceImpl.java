@@ -42,8 +42,8 @@ public class IncidentServiceImpl implements IncidentService {
             incident.setIncidentType(incidentDto.getIncidentType());
             incident.setReportedBy(user.getId());
 
-            var newIncident = incidentRepository.save(incident);
-            sendIncidentRegisterAudit(newIncident);
+            incidentRepository.save(incident);
+            sendIncidentRegisterAudit(incident);
         }catch (Exception e) {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }
@@ -53,8 +53,8 @@ public class IncidentServiceImpl implements IncidentService {
         AuditIncidentDto auditIncidentDto = new AuditIncidentDto();
         auditIncidentDto.setEventType(KafkaEventTypes.REGISTER_INCIDENT);
         auditIncidentDto.setPayload(incident.getTitle()+" " + incident.getId());
-        
-        kafkaTemplate.send(incidentTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_INCIDENT,auditIncidentDto));
+
+        kafkaTemplate.send(incidentTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_INCIDENT, auditIncidentDto));
     }
 
     @Override

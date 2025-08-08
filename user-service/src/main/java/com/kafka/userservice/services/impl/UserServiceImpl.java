@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
            userRepository.save(newUser);
            sendUserRegisterAudit(newUser);
         }catch (Exception e){
-            throw new RuntimeException("Erro al registrar el usuario");
+            throw new RuntimeException("Erro al registrar el usuario: "+e.getMessage());
         }
     }
 

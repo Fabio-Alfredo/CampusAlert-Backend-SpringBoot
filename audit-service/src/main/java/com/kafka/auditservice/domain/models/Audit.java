@@ -25,12 +25,13 @@ public class Audit {
     @Column(name = "payload", nullable = false)
     private String payload;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime timestamp;
 
-    @PrePersist
-    public void prePersist() {
-        this.timestamp = LocalDateTime.now();
-    }
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    private LocalDateTime timestamp;
+//
+//    @PrePersist
+//    public void prePersist() {
+//        this.timestamp = LocalDateTime.now();
+//    }
 
 }

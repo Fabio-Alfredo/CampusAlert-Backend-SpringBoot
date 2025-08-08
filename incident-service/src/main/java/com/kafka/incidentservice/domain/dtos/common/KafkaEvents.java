@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class KafkaEvents<T> {
     private KafkaEventTypes eventType;
-    private Object T;
+    private T data;
 }

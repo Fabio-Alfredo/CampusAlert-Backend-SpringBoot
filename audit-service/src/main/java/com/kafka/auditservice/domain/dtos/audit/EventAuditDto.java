@@ -4,7 +4,7 @@ import com.kafka.auditservice.domain.enums.EventType;
 import lombok.Data;
 
 @Data
-public class UserAuditDto {
+public class EventAuditDto {
     private EventType eventType;
     private String payload;
     private String source_service;

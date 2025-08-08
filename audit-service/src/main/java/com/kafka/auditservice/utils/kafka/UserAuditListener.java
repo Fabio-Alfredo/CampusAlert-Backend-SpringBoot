@@ -2,12 +2,11 @@ package com.kafka.auditservice.utils.kafka;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kafka.auditservice.domain.dtos.audit.UserAuditDto;
+import com.kafka.auditservice.domain.dtos.audit.EventAuditDto;
 import com.kafka.auditservice.domain.dtos.commons.KafkaEventsDto;
 import com.kafka.auditservice.services.contract.AuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -24,21 +23,31 @@ public class UserAuditListener {
         this.auditService = auditService;
     }
 
+
+    private <T> T convertTo(Object data, Class<T> type){
+        return objectMapper.convertValue(data, type);
+    }
+
     @KafkaListener(
-            topics = "#{'${kafka.topic.user-and-audit.name}'}",
+            topics = {"${kafka.topic.user-and-audit.name}", "${kafka.topic.incident-and-audit.name}"},
             groupId = "${kafka.topic.user-register.group-id}",
             containerFactory = "userRegisterContainerFactory"
     )
-    public void userAuditListener(KafkaEventsDto<UserAuditDto> kafkaEvents){
+    public void userAuditListener(KafkaEventsDto<EventAuditDto> kafkaEvents){
         try{
             LOGGER.info("Received user audit event: {}", kafkaEvents.getEventType());
             switch (kafkaEvents.getEventType()){
                 case USER_REGISTERED:
-                    UserAuditDto userAuditDto = convertTo(kafkaEvents.getData(), UserAuditDto.class);
+                    EventAuditDto userAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
                     userAuditDto.setSource_service("User Service");
                     auditService.createAudit(userAuditDto);
                     break;
-
+                case REGISTER_INCIDENT:
+                    System.out.println(kafkaEvents);
+                    EventAuditDto incidentAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
+                    incidentAuditDto.setSource_service("Incident Register");
+                    auditService.createAudit(incidentAuditDto);
+                    break;
                 default:
                     LOGGER.warn("Unhandled user audit event type: {}", kafkaEvents.getEventType());
                     break;
@@ -46,9 +55,5 @@ public class UserAuditListener {
         }catch (Exception e) {
             LOGGER.error("Error processing user audit event: {}", e.getMessage());
         }
-    }
-
-    private <T> T convertTo(Object data, Class<T> type){
-        return objectMapper.convertValue(data, type);
     }
 }

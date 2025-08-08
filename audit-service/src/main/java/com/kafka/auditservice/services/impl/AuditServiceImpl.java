@@ -1,6 +1,6 @@
 package com.kafka.auditservice.services.impl;
 
-import com.kafka.auditservice.domain.dtos.audit.UserAuditDto;
+import com.kafka.auditservice.domain.dtos.audit.EventAuditDto;
 import com.kafka.auditservice.domain.models.Audit;
 import com.kafka.auditservice.repositories.AuditRepository;
 import com.kafka.auditservice.services.contract.AuditService;
@@ -19,7 +19,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public void createAudit(UserAuditDto userAuditDto) {
+    public void createAudit(EventAuditDto userAuditDto) {
         try{
             Audit newAudit = new Audit();
             newAudit.setEventType(userAuditDto.getEventType());

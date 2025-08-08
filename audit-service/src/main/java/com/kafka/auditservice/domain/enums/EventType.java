@@ -1,7 +1,7 @@
 package com.kafka.auditservice.domain.enums;
 
 public enum EventType {
-    INCIDENT_REPORTED,
+    REGISTER_INCIDENT,
     USER_REGISTERED;
 
     public static EventType fromString(String eventType){
