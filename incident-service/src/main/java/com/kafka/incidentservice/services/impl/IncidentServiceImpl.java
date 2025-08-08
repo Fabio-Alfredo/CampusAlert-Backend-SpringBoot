@@ -2,11 +2,16 @@ package com.kafka.incidentservice.services.impl;
 
 import com.kafka.incidentservice.Repositories.IncidentRepository;
 import com.kafka.incidentservice.domain.dtos.auth.UserDto;
+import com.kafka.incidentservice.domain.dtos.common.KafkaEvents;
+import com.kafka.incidentservice.domain.dtos.incident.AuditIncidentDto;
 import com.kafka.incidentservice.domain.dtos.incident.RegisterIncidentDto;
 import com.kafka.incidentservice.domain.enums.IncidentStatus;
+import com.kafka.incidentservice.domain.enums.KafkaEventTypes;
 import com.kafka.incidentservice.domain.models.Incident;
 import com.kafka.incidentservice.services.contract.IAuthService;
 import com.kafka.incidentservice.services.contract.IncidentService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,14 +20,17 @@ import java.util.UUID;
 @Service
 public class IncidentServiceImpl implements IncidentService {
 
-
+    @Value("${kafka.topic.incident-and-audit.name}")
+    private String incidentTopic;
 
     private final IncidentRepository incidentRepository;
     private final IAuthService authService;
+    private final KafkaTemplate<String, KafkaEvents<AuditIncidentDto>> kafkaTemplate;
 
-    public IncidentServiceImpl(IncidentRepository incidentRepository, IAuthService authService) {
+    public IncidentServiceImpl(IncidentRepository incidentRepository, IAuthService authService, KafkaTemplate<String, KafkaEvents<AuditIncidentDto>> kafkaTemplate) {
         this.incidentRepository = incidentRepository;
         this.authService = authService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -34,11 +42,19 @@ public class IncidentServiceImpl implements IncidentService {
             incident.setIncidentType(incidentDto.getIncidentType());
             incident.setReportedBy(user.getId());
 
-            incidentRepository.save(incident);
-
+            var newIncident = incidentRepository.save(incident);
+            sendIncidentRegisterAudit(newIncident);
         }catch (Exception e) {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }
+    }
+
+    private void sendIncidentRegisterAudit(Incident incident){
+        AuditIncidentDto auditIncidentDto = new AuditIncidentDto();
+        auditIncidentDto.setEventType(KafkaEventTypes.REGISTER_INCIDENT);
+        auditIncidentDto.setPayload(incident.getTitle()+" " + incident.getId());
+        
+        kafkaTemplate.send(incidentTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_INCIDENT,auditIncidentDto));
     }
 
     @Override

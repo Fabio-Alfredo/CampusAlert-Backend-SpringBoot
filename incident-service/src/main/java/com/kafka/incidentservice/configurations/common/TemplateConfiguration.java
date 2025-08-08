@@ -1,4 +1,4 @@
-package com.kafka.incidentservice.configurations;
+package com.kafka.incidentservice.configurations.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.kafka.incidentservice.configurations;
+package com.kafka.incidentservice.configurations.security;
 
 import com.kafka.incidentservice.uitls.security.AuthFilterTools;
 import jakarta.servlet.http.HttpServletResponse;
