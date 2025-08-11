@@ -51,7 +51,7 @@ public class AuthServiceImpl implements IAuthService {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
 
             ResponseEntity<GeneralResponse> res = restTemplate.exchange(
-                    userServiceUrl+"/exists/" + userId,
+                    userServiceUrl+"/exists/" + userId+"/"+"SEC",
                     HttpMethod.GET,
                     entity,
                     GeneralResponse.class

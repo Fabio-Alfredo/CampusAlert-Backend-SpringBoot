@@ -1,2 +1,14 @@
-package com.kafka.incidentservice.configurations.common;public class MappersConfiguration {
+package com.kafka.incidentservice.configurations.common;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MappersConfiguration {
+
+    @Bean
+    ObjectMapper objectMapper(){
+        return new ObjectMapper();
+    }
 }

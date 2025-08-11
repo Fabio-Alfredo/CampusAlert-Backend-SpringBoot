@@ -24,14 +24,14 @@ public class Incident {
     private IncidentStatus incidentStatus;
     private UUID reportedBy;
     private UUID assignedTo;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime reportedAt;
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    private LocalDateTime reportedAt;
 
     @PrePersist
     private void prePersist(){
-        if (reportedAt == null) {
-            reportedAt = LocalDateTime.now();
-        }
+//        if (reportedAt == null) {
+//            reportedAt = LocalDateTime.now();
+//        }
         if (incidentStatus == null) {
             incidentStatus = IncidentStatus.REPORTED;
         }

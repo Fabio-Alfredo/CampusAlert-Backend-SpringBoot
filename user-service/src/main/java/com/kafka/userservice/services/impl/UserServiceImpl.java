@@ -220,7 +220,7 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(id).orElse(null);
             if(user == null)
                 throw new Exception("El usuario no existe");
-            
+
             var roles = user.getRoles();
             if (!roles.contains(newRole)) {
                 roles.add(newRole);

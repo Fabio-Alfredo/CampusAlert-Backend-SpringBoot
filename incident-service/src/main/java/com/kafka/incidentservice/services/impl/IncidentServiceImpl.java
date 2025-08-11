@@ -1,9 +1,12 @@
 package com.kafka.incidentservice.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.incidentservice.Repositories.IncidentRepository;
 import com.kafka.incidentservice.domain.dtos.auth.UserDto;
 import com.kafka.incidentservice.domain.dtos.common.KafkaEvents;
 import com.kafka.incidentservice.domain.dtos.incident.AuditIncidentDto;
+import com.kafka.incidentservice.domain.dtos.incident.IncidentDto;
 import com.kafka.incidentservice.domain.dtos.incident.RegisterIncidentDto;
 import com.kafka.incidentservice.domain.enums.IncidentStatus;
 import com.kafka.incidentservice.domain.enums.KafkaEventTypes;
@@ -26,11 +29,13 @@ public class IncidentServiceImpl implements IncidentService {
     private final IncidentRepository incidentRepository;
     private final IAuthService authService;
     private final KafkaTemplate<String, KafkaEvents<AuditIncidentDto>> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
-    public IncidentServiceImpl(IncidentRepository incidentRepository, IAuthService authService, KafkaTemplate<String, KafkaEvents<AuditIncidentDto>> kafkaTemplate) {
+    public IncidentServiceImpl(IncidentRepository incidentRepository, IAuthService authService, KafkaTemplate<String, KafkaEvents<AuditIncidentDto>> kafkaTemplate, ObjectMapper objectMapper) {
         this.incidentRepository = incidentRepository;
         this.authService = authService;
         this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -43,16 +48,17 @@ public class IncidentServiceImpl implements IncidentService {
             incident.setReportedBy(user.getId());
 
             incidentRepository.save(incident);
-            sendIncidentRegisterAudit(incident);
+            sendIncidentRegisterAudit(incident, KafkaEventTypes.REGISTER_INCIDENT);
         }catch (Exception e) {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }
     }
 
-    private void sendIncidentRegisterAudit(Incident incident){
+    private void sendIncidentRegisterAudit(Incident incident, KafkaEventTypes eventType) throws JsonProcessingException {
         AuditIncidentDto auditIncidentDto = new AuditIncidentDto();
-        auditIncidentDto.setEventType(KafkaEventTypes.REGISTER_INCIDENT);
-        auditIncidentDto.setPayload(incident.getTitle()+" " + incident.getId());
+        auditIncidentDto.setEventType(eventType);
+        IncidentDto incidentDto = convertTo(incident, IncidentDto.class);
+        auditIncidentDto.setPayload(objectMapper.writeValueAsString(incidentDto));
 
         kafkaTemplate.send(incidentTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_INCIDENT, auditIncidentDto));
     }
@@ -82,6 +88,7 @@ public class IncidentServiceImpl implements IncidentService {
 
             incident.setAssignedTo(security);
             incidentRepository.save(incident);
+            sendIncidentRegisterAudit(incident, KafkaEventTypes.ASSIGN_SECURITY);
             return incident;
         }catch (Exception e){
             throw new RuntimeException("Error assigning security to incident: " + e.getMessage(), e);
@@ -102,6 +109,10 @@ public class IncidentServiceImpl implements IncidentService {
         }catch (Exception e){
             throw new RuntimeException("Error update status to incident: "+e.getMessage());
         }
+    }
+
+    private <T> T convertTo(Object data, Class<T> type){
+        return objectMapper.convertValue(data, type);
     }
 
 

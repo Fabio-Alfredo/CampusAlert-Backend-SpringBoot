@@ -3,7 +3,7 @@ package com.kafka.incidentservice.domain.enums;
 public enum KafkaEventTypes {
     REGISTER_INCIDENT,
     UPDATE_STATUS_INCIDENT,
-    ASSIGN_SECURITY_INCIDENT;
+    ASSIGN_SECURITY;
 
 
     public static KafkaEventTypes fromString(String type){
