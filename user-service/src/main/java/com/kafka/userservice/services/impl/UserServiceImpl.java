@@ -4,6 +4,7 @@ import com.kafka.userservice.domain.dtos.auth.*;
 import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.KafkaEventTypes;
+import com.kafka.userservice.domain.enums.RolesActions;
 import com.kafka.userservice.domain.enums.TypeToken;
 import com.kafka.userservice.domain.models.Role;
 import com.kafka.userservice.domain.models.Token;
@@ -214,16 +215,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateRole(UUID id, String role) {
+    public void updateRole(UUID id, String role, RolesActions action) {
         try{
+
             Role newRole = roleService.findById(role);
-            User user = userRepository.findById(id).orElse(null);
-            if(user == null)
-                throw new Exception("El usuario no existe");
+            var user = userRepository.findById(id).orElseThrow(() -> new Exception("El usuario no existe"));
+
+            var userAuth = getUserAuthenticated();
+
+            if(userAuth.getId().equals(user.getId()))
+                throw new Exception("No puedes actualizar tu propio rol");
 
             var roles = user.getRoles();
-            if (!roles.contains(newRole)) {
-                roles.add(newRole);
+
+            switch (action){
+                case ADD_ROLE:
+                    if(!roles.contains(newRole))
+                        roles.add(newRole);
+                    break;
+                case DELETE_ROLE:
+                    roles.remove(newRole);
+                    break;
+                default:
+                    throw new Exception("Accion no valida");
             }
             userRepository.save(user);
 

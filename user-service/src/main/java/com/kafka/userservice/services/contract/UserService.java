@@ -5,6 +5,7 @@ import com.kafka.userservice.domain.dtos.auth.LocalAuthDto;
 import com.kafka.userservice.domain.dtos.auth.RegisterUserDto;
 import com.kafka.userservice.domain.dtos.auth.ResetPasswordDto;
 import com.kafka.userservice.domain.dtos.auth.TokenDto;
+import com.kafka.userservice.domain.enums.RolesActions;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,8 @@ public interface UserService {
     void resetPassword(ResetPasswordDto resetPasswordDto);
     void updatePhoto(MultipartFile photoFile, String email);
     Boolean existUserByIdAndRole(UUID id, String role);
-    void updateRole(UUID id, String role);
+
+    void updateRole(UUID id, String role, RolesActions action);
 
     User findById(UUID id);
     List<User> findAllUsers();

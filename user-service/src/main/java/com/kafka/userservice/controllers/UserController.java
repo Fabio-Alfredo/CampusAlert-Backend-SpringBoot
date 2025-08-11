@@ -1,8 +1,11 @@
 package com.kafka.userservice.controllers;
 
 import com.kafka.userservice.domain.dtos.commons.GeneralResponse;
+import com.kafka.userservice.domain.dtos.user.UpdateRolesDto;
+import com.kafka.userservice.domain.enums.RolesActions;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.services.contract.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,12 +66,12 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update-role/{id}/{role}")
+    @PutMapping("/update-role")
 //    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<GeneralResponse> updateUserRole(@PathVariable UUID id,
-                                                          @PathVariable String role) {
+    public ResponseEntity<GeneralResponse> updateUserRole(@RequestBody @Valid UpdateRolesDto data) {
         try {
-            userService.updateRole(id, role);
+            RolesActions rolesActions =RolesActions.fromString(data.getAction());
+            userService.updateRole(data.getUserId(), data.getRoleId(), rolesActions);
             return GeneralResponse.getResponse(HttpStatus.OK, "User role updated successfully");
         } catch (Exception e) {
             return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error updating user role: " + e.getMessage());
