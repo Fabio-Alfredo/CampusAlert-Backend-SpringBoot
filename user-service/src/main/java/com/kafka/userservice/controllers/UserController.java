@@ -6,10 +6,7 @@ import com.kafka.userservice.services.contract.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -35,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<GeneralResponse> getAllUsers() {
         try {
             var users = userService.findAllUsers();
@@ -55,13 +52,26 @@ public class UserController {
         }
     }
 
-    @GetMapping("/exists/{id}")
-    public ResponseEntity<GeneralResponse> existsUserById(@PathVariable UUID id) {
+    @GetMapping("/exists/{id}/{role}")
+    public ResponseEntity<GeneralResponse> existsUserById(@PathVariable UUID id,
+                                                          @PathVariable String role) {
         try {
-            boolean exists = userService.existUserById(id);
+            boolean exists = userService.existUserByIdAndRole(id, role);
             return GeneralResponse.getResponse(HttpStatus.OK, "User existence checked successfully", exists);
         } catch (Exception e) {
             return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error checking user existence: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update-role/{id}/{role}")
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<GeneralResponse> updateUserRole(@PathVariable UUID id,
+                                                          @PathVariable String role) {
+        try {
+            userService.updateRole(id, role);
+            return GeneralResponse.getResponse(HttpStatus.OK, "User role updated successfully");
+        } catch (Exception e) {
+            return GeneralResponse.getResponse(HttpStatus.BAD_REQUEST, "Error updating user role: " + e.getMessage());
         }
     }
 }

@@ -5,6 +5,7 @@ import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.KafkaEventTypes;
 import com.kafka.userservice.domain.enums.TypeToken;
+import com.kafka.userservice.domain.models.Role;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.repositories.UserRepository;
@@ -201,12 +202,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean existUserById(UUID id) {
+    public Boolean existUserByIdAndRole(UUID id, String role) {
         try{
-            User user = userRepository.findById(id).orElse(null);
+            Role userRole = roleService.findById(role);
+            User user = userRepository.findByIdAndRoles(id, List.of(userRole));
+
             return user != null;
         }catch (Exception e ){
             throw new RuntimeException("Error al verificar si el usuario existe: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void updateRole(UUID id, String role) {
+        try{
+            Role newRole = roleService.findById(role);
+            User user = userRepository.findById(id).orElse(null);
+            if(user == null)
+                throw new Exception("El usuario no existe");
+            
+            var roles = user.getRoles();
+            if (!roles.contains(newRole)) {
+                roles.add(newRole);
+            }
+            userRepository.save(user);
+
+        }catch (Exception e){
+            throw new RuntimeException("Error al actualizar el rol del usuario: " + e.getMessage());
         }
     }
 
