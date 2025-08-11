@@ -43,10 +43,14 @@ public class UserAuditListener {
                     auditService.createAudit(userAuditDto);
                     break;
                 case REGISTER_INCIDENT:
-                    System.out.println(kafkaEvents);
                     EventAuditDto incidentAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
                     incidentAuditDto.setSource_service("Incident Register");
                     auditService.createAudit(incidentAuditDto);
+                    break;
+                case ASSIGN_SECURITY:
+                    EventAuditDto assignSecurityAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
+                    assignSecurityAuditDto.setSource_service("Incident Assign Security");
+                    auditService.createAudit(assignSecurityAuditDto);
                     break;
                 default:
                     LOGGER.warn("Unhandled user audit event type: {}", kafkaEvents.getEventType());

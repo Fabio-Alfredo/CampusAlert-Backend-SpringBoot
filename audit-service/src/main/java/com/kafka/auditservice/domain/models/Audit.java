@@ -22,7 +22,7 @@ public class Audit {
     private EventType eventType;
     @Column(name = "source_service", nullable = false)
     private String sourceService;
-    @Column(name = "payload", nullable = false)
+    @Column(name = "payload", nullable = false, length = 1024)
     private String payload;
 
 

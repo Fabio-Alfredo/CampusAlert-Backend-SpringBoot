@@ -2,7 +2,8 @@ package com.kafka.auditservice.domain.enums;
 
 public enum EventType {
     REGISTER_INCIDENT,
-    USER_REGISTERED;
+    USER_REGISTERED,
+    ASSIGN_SECURITY;
 
     public static EventType fromString(String eventType){
         for (EventType type: EventType.values()) {
