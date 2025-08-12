@@ -5,17 +5,16 @@ import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
 import com.kafka.userservice.domain.dtos.user.UserDto;
 import com.kafka.userservice.domain.enums.KafkaEventTypes;
 import com.kafka.userservice.domain.models.User;
-import com.kafka.userservice.services.contract.IncidentAuditPublisher;
+import com.kafka.userservice.services.contract.UserAuditPublisher;
 import com.kafka.userservice.utils.common.MapperTools;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 @Service
-public class IncidentAuditPublisherImpl implements IncidentAuditPublisher {
+public class UserAuditPublisherImpl implements UserAuditPublisher {
 
     @Value("${kafka.topic.user-and-audit.name}")
     private String userAndAuditTopic;
@@ -23,7 +22,7 @@ public class IncidentAuditPublisherImpl implements IncidentAuditPublisher {
     private final MapperTools mapperTools;
     private final KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate;
 
-    public IncidentAuditPublisherImpl(MapperTools mapperTools, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate) {
+    public UserAuditPublisherImpl(MapperTools mapperTools, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate) {
         this.mapperTools = mapperTools;
         this.kafkaTemplate = kafkaTemplate;
     }

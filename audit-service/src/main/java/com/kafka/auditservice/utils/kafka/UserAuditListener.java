@@ -50,10 +50,13 @@ public class UserAuditListener {
                     break;
                 case UPDATE_STATUS_INCIDENT:
                     eventAuditDto.setSource_service("Incident updating");
+                    break;
                 case USER_UPDATING_PASSWORD:
                     eventAuditDto.setSource_service("User updating");
+                    break;
                 case USER_UPDATING_ROLES:
                     eventAuditDto.setSource_service("Updated user roles");
+                    break;
                 default:
                     LOGGER.warn("Unhandled user audit event type: {}", kafkaEvents.getEventType());
                     return;

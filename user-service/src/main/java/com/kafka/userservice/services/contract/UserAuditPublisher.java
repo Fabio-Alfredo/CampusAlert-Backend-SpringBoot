@@ -5,6 +5,6 @@ import com.kafka.userservice.domain.models.User;
 
 import java.util.UUID;
 
-public interface IncidentAuditPublisher {
+public interface UserAuditPublisher {
     void publishAuditEvent(User user, KafkaEventTypes action, UUID editedBy);
 }

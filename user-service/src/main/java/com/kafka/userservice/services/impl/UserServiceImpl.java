@@ -1,9 +1,6 @@
 package com.kafka.userservice.services.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kafka.userservice.domain.dtos.auth.*;
-import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
-import com.kafka.userservice.domain.dtos.user.UserDto;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.KafkaEventTypes;
 import com.kafka.userservice.domain.enums.RolesActions;
@@ -12,13 +9,11 @@ import com.kafka.userservice.domain.models.Role;
 import com.kafka.userservice.domain.models.Token;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.repositories.UserRepository;
-import com.kafka.userservice.services.contract.IncidentAuditPublisher;
+import com.kafka.userservice.services.contract.UserAuditPublisher;
 import com.kafka.userservice.services.contract.RoleService;
 import com.kafka.userservice.services.contract.TokenService;
 import com.kafka.userservice.services.contract.UserService;
-import com.kafka.userservice.utils.common.MapperTools;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,12 +38,10 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
     private final GoogleAuthServiceImpl googleAuthService;
     private final EmailServiceImpl emailService;
-//    private final KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate;
     private final CloudinaryService cloudinaryService;
-//    private final MapperTools mapperTools;
-    private final IncidentAuditPublisher incidentAuditPublisher;
+    private final UserAuditPublisher incidentAuditPublisher;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, CloudinaryService cloudinaryService, IncidentAuditPublisher incidentAuditPublisher) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, CloudinaryService cloudinaryService, UserAuditPublisher incidentAuditPublisher) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
