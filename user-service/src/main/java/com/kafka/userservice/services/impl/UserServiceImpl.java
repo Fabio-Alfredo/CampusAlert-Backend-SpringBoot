@@ -1,7 +1,9 @@
 package com.kafka.userservice.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kafka.userservice.domain.dtos.auth.*;
 import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
+import com.kafka.userservice.domain.dtos.user.UserDto;
 import com.kafka.userservice.domain.enums.AuthProvider;
 import com.kafka.userservice.domain.enums.KafkaEventTypes;
 import com.kafka.userservice.domain.enums.RolesActions;
@@ -13,6 +15,7 @@ import com.kafka.userservice.repositories.UserRepository;
 import com.kafka.userservice.services.contract.RoleService;
 import com.kafka.userservice.services.contract.TokenService;
 import com.kafka.userservice.services.contract.UserService;
+import com.kafka.userservice.utils.common.MapperTools;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,8 +45,9 @@ public class UserServiceImpl implements UserService {
     private final EmailServiceImpl emailService;
     private final KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate;
     private final CloudinaryService cloudinaryService;
+    private final MapperTools mapperTools;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate, CloudinaryService cloudinaryService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService, TokenService tokenService, GoogleAuthServiceImpl googleAuthService, EmailServiceImpl emailService, KafkaTemplate<String, KafkaEvents<UserRegisterAuditDto>> kafkaTemplate, CloudinaryService cloudinaryService, MapperTools mapperTools) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
@@ -52,6 +56,7 @@ public class UserServiceImpl implements UserService {
         this.emailService = emailService;
         this.kafkaTemplate = kafkaTemplate;
         this.cloudinaryService = cloudinaryService;
+        this.mapperTools = mapperTools;
     }
 
     @Override
@@ -99,16 +104,18 @@ public class UserServiceImpl implements UserService {
            newUser.setAuthProvider(AuthProvider.LOCAL);
 
            userRepository.save(newUser);
-           sendUserRegisterAudit(newUser);
+           sendUserRegisterAudit(newUser, KafkaEventTypes.USER_REGISTERED, newUser.getId());
         }catch (Exception e){
             throw new RuntimeException("Erro al registrar el usuario: "+e.getMessage());
         }
     }
 
-    private void sendUserRegisterAudit(User user){
+    private void sendUserRegisterAudit(User user, KafkaEventTypes event, UUID editedBy) throws JsonProcessingException {
         UserRegisterAuditDto data = new UserRegisterAuditDto();
-        data.setEventType(KafkaEventTypes.USER_REGISTERED);
-        data.setPayload(user.getEmail() + " - " + user.getId());
+        data.setEventType(event);
+        UserDto userDto = mapperTools.convertTo(user, UserDto.class);
+        userDto.setUpdatingBy(editedBy);
+        data.setPayload(mapperTools.convertToString(userDto));
 
         kafkaTemplate.send(userAndAuditTopic, new KafkaEvents<>(KafkaEventTypes.USER_REGISTERED, data));
     }
@@ -142,6 +149,7 @@ public class UserServiceImpl implements UserService {
                 user.setAuthProvider(AuthProvider.GOOGLE_PROVIDER);
                 user.setRoles(List.of(role));
                 user = userRepository.save(user);
+                sendUserRegisterAudit(user, KafkaEventTypes.USER_REGISTERED ,user.getId());
             }
 
 
@@ -182,6 +190,7 @@ public class UserServiceImpl implements UserService {
 
             user.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));
             userRepository.save(user);
+            sendUserRegisterAudit(user, KafkaEventTypes.USER_UPDATING_PASSWORD, user.getId());
         }catch (Exception e){
             throw new RuntimeException("Error al restablecer la contraseña: " + e.getMessage());
         }
@@ -240,6 +249,7 @@ public class UserServiceImpl implements UserService {
                     throw new Exception("Accion no valida");
             }
             userRepository.save(user);
+            sendUserRegisterAudit(user, KafkaEventTypes.USER_UPDATING_ROLES, userAuth.getId());
 
         }catch (Exception e){
             throw new RuntimeException("Error al actualizar el rol del usuario: " + e.getMessage());

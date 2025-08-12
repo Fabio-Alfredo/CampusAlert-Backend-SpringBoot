@@ -48,16 +48,17 @@ public class IncidentServiceImpl implements IncidentService {
             incident.setReportedBy(user.getId());
 
             incidentRepository.save(incident);
-            sendIncidentRegisterAudit(incident, KafkaEventTypes.REGISTER_INCIDENT);
+            sendIncidentRegisterAudit(incident, KafkaEventTypes.REGISTER_INCIDENT, user.getId());
         }catch (Exception e) {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }
     }
 
-    private void sendIncidentRegisterAudit(Incident incident, KafkaEventTypes eventType) throws JsonProcessingException {
+    private void sendIncidentRegisterAudit(Incident incident, KafkaEventTypes eventType, UUID updatedBy) throws JsonProcessingException {
         AuditIncidentDto auditIncidentDto = new AuditIncidentDto();
         auditIncidentDto.setEventType(eventType);
         IncidentDto incidentDto = convertTo(incident, IncidentDto.class);
+        incidentDto.setUpdatedBy(updatedBy);
         auditIncidentDto.setPayload(objectMapper.writeValueAsString(incidentDto));
 
         kafkaTemplate.send(incidentTopic, new KafkaEvents<>(KafkaEventTypes.REGISTER_INCIDENT, auditIncidentDto));
@@ -78,6 +79,7 @@ public class IncidentServiceImpl implements IncidentService {
         try{
 
             Incident incident = incidentRepository.findById(incidentId).orElse(null);
+            var user = authService.findAuthenticatedUser();
             if(incident == null) {
                 throw new RuntimeException("Incident not found");
             }
@@ -88,7 +90,7 @@ public class IncidentServiceImpl implements IncidentService {
 
             incident.setAssignedTo(security);
             incidentRepository.save(incident);
-            sendIncidentRegisterAudit(incident, KafkaEventTypes.ASSIGN_SECURITY);
+            sendIncidentRegisterAudit(incident, KafkaEventTypes.ASSIGN_SECURITY, user.getId() );
             return incident;
         }catch (Exception e){
             throw new RuntimeException("Error assigning security to incident: " + e.getMessage(), e);
@@ -101,11 +103,16 @@ public class IncidentServiceImpl implements IncidentService {
             var incident = incidentRepository.findById(incidentId).orElse(null);
             if(incident == null)
                 throw new RuntimeException("Incident not found");
+
             IncidentStatus validStatus = IncidentStatus.fromString(status);
             incident.setIncidentStatus(validStatus);
 
-            return incidentRepository.save(incident);
+            var user = authService.findAuthenticatedUser();
+            var updatingIncident = incidentRepository.save(incident);
 
+            sendIncidentRegisterAudit(incident, KafkaEventTypes.UPDATE_STATUS_INCIDENT, user.getId());
+
+            return updatingIncident;
         }catch (Exception e){
             throw new RuntimeException("Error update status to incident: "+e.getMessage());
         }

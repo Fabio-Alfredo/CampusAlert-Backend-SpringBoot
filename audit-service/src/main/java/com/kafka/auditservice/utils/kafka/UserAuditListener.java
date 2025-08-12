@@ -52,6 +52,18 @@ public class UserAuditListener {
                     assignSecurityAuditDto.setSource_service("Incident Assign Security");
                     auditService.createAudit(assignSecurityAuditDto);
                     break;
+                case UPDATE_STATUS_INCIDENT:
+                    EventAuditDto updateIncident = convertTo(kafkaEvents.getData(), EventAuditDto.class);
+                    updateIncident.setSource_service("Incident updating");
+                    auditService.createAudit(updateIncident);
+                case USER_UPDATING_PASSWORD:
+                    EventAuditDto updateUser = convertTo(kafkaEvents.getData(), EventAuditDto.class);
+                    updateUser.setSource_service("User updating");
+                    auditService.createAudit(updateUser);
+                case USER_UPDATING_ROLES:
+                    EventAuditDto userUpdated = convertTo(kafkaEvents.getData(), EventAuditDto.class);
+                    userUpdated.setSource_service("Updated user roles");
+                    auditService.createAudit(userUpdated);
                 default:
                     LOGGER.warn("Unhandled user audit event type: {}", kafkaEvents.getEventType());
                     break;

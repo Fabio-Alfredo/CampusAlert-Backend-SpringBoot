@@ -19,4 +19,5 @@ public class IncidentDto {
     private IncidentStatus incidentStatus;
     private UUID reportedBy;
     private UUID assignedTo;
+    private UUID updatedBy;
 }
