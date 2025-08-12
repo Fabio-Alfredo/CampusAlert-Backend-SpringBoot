@@ -29,7 +29,15 @@ public class KafkaProvidersConfiguration {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
         properties.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
+        //espera confirmación de todos los brokers antes de considerar el mensaje como enviado
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        //numero de reintentos en caso de fallo
+        properties.put(ProducerConfig.RETRIES_CONFIG, 5);
+        //tiempo de espera para reintentar el envío del mensaje (en milisegundos)
+        properties.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
+        //tiempo de espera para que el productor considere que un mensaje ha fallado (en milisegundos)
+        properties.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 120000);
+        //habilita la idempotencia del productor, lo que significa que los mensajes duplicados no se enviarán
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 
         return  properties;

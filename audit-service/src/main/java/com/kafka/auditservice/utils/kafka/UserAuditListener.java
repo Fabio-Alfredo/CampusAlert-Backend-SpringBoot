@@ -8,6 +8,7 @@ import com.kafka.auditservice.services.contract.AuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,41 +34,32 @@ public class UserAuditListener {
             groupId = "${kafka.topic.user-register.group-id}",
             containerFactory = "userRegisterContainerFactory"
     )
-    public void userAuditListener(KafkaEventsDto<EventAuditDto> kafkaEvents){
+    public void userAuditListener(KafkaEventsDto<EventAuditDto> kafkaEvents, Acknowledgment ack){
         try{
             LOGGER.info("Received user audit event: {}", kafkaEvents.getEventType());
+            EventAuditDto eventAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
             switch (kafkaEvents.getEventType()){
                 case USER_REGISTERED:
-                    EventAuditDto userAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
-                    userAuditDto.setSource_service("User Service");
-                    auditService.createAudit(userAuditDto);
+                    eventAuditDto.setSource_service("User Service");
                     break;
                 case REGISTER_INCIDENT:
-                    EventAuditDto incidentAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
-                    incidentAuditDto.setSource_service("Incident Register");
-                    auditService.createAudit(incidentAuditDto);
+                    eventAuditDto.setSource_service("Incident Register");
                     break;
                 case ASSIGN_SECURITY:
-                    EventAuditDto assignSecurityAuditDto = convertTo(kafkaEvents.getData(), EventAuditDto.class);
-                    assignSecurityAuditDto.setSource_service("Incident Assign Security");
-                    auditService.createAudit(assignSecurityAuditDto);
+                    eventAuditDto.setSource_service("Incident Assign Security");
                     break;
                 case UPDATE_STATUS_INCIDENT:
-                    EventAuditDto updateIncident = convertTo(kafkaEvents.getData(), EventAuditDto.class);
-                    updateIncident.setSource_service("Incident updating");
-                    auditService.createAudit(updateIncident);
+                    eventAuditDto.setSource_service("Incident updating");
                 case USER_UPDATING_PASSWORD:
-                    EventAuditDto updateUser = convertTo(kafkaEvents.getData(), EventAuditDto.class);
-                    updateUser.setSource_service("User updating");
-                    auditService.createAudit(updateUser);
+                    eventAuditDto.setSource_service("User updating");
                 case USER_UPDATING_ROLES:
-                    EventAuditDto userUpdated = convertTo(kafkaEvents.getData(), EventAuditDto.class);
-                    userUpdated.setSource_service("Updated user roles");
-                    auditService.createAudit(userUpdated);
+                    eventAuditDto.setSource_service("Updated user roles");
                 default:
                     LOGGER.warn("Unhandled user audit event type: {}", kafkaEvents.getEventType());
-                    break;
+                    return;
             }
+            auditService.createAudit(eventAuditDto);
+            ack.acknowledge();
         }catch (Exception e) {
             LOGGER.error("Error processing user audit event: {}", e.getMessage());
         }
