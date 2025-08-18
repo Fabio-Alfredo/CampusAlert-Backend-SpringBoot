@@ -102,5 +102,30 @@ public class IncidentServiceImpl implements IncidentService {
         }
     }
 
+    @Override
+    public List<Incident> findAllMyIncidents() {
+        try{
+            var user = authService.findAuthenticatedUser();
+            if(user == null){
+                throw new RuntimeException("Authenticated user not found");
+            }
+            List<Incident> incidents = incidentRepository.findAllByReportedBy(user.getId());
+
+            return incidents;
+        }catch (Exception e){
+            throw new RuntimeException("Error fetching incidents by user: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Incident> findAllIncidentsByUserId(UUID userId) {
+        try{
+         List<Incident> incidents = incidentRepository.findAllByReportedBy(userId);
+            return incidents;
+        }catch (Exception e){
+            throw new RuntimeException("Error fetching incidents by user: " + e.getMessage(), e);
+        }
+    }
+
 
 }

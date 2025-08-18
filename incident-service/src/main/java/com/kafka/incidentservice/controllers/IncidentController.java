@@ -12,6 +12,7 @@ import com.kafka.incidentservice.services.contract.IncidentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
@@ -31,6 +32,7 @@ public class IncidentController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SECURITY')")
     public ResponseEntity<GeneralResponse>finAllIncidents(){
         try{
             List<Incident>incidents = incidentService.findAllIncidents();
@@ -52,6 +54,7 @@ public class IncidentController {
     }
 
     @PutMapping("/assign-security")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<GeneralResponse>assignSecurityInIncident(@RequestBody @Valid AssignSecurityDto assignSecurityDto){
         try{
 
@@ -63,6 +66,7 @@ public class IncidentController {
     }
 
     @PutMapping("/update-status")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SECURITY')")
     public ResponseEntity<GeneralResponse>updateStatusToIncident(@RequestBody @Valid UpdateStatusDto updateStatusDto){
         try{
             var status = IncidentStatus.fromString(updateStatusDto.getStatus());
@@ -70,6 +74,27 @@ public class IncidentController {
             return GeneralResponse.getResponse(HttpStatus.OK, "New Status assigned to incident is successfully", incident);
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error assigning new status: " + e.getMessage() + " Please try again later.");
+        }
+    }
+
+    @GetMapping("/my-incidents")
+    public ResponseEntity<GeneralResponse>findAllMyIncidents(){
+        try{
+            List<Incident>incidents = incidentService.findAllMyIncidents();
+            return GeneralResponse.getResponse(HttpStatus.OK, "My Incidents fetched successfully", incidents);
+        }catch (Exception e){
+            return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching my incidents: " + e.getMessage()+ " Please try again later.");
+        }
+    }
+
+    @GetMapping("/by-user/{userId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SECURITY')")
+    public ResponseEntity<GeneralResponse>findAllIncidentsByUserId(@PathVariable UUID userId){
+        try{
+            List<Incident>incidents = incidentService.findAllIncidentsByUserId(userId);
+            return GeneralResponse.getResponse(HttpStatus.OK, "User's Incidents fetched successfully", incidents);
+        }catch (Exception e){
+            return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching user's incidents: " + e.getMessage()+ " Please try again later.");
         }
     }
 }

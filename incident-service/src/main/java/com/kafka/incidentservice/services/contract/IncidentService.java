@@ -14,5 +14,7 @@ public interface IncidentService {
     List<Incident>findAllIncidents();
     Incident assignSecurityInIncident(UUID security, UUID incidentId);
     Incident updateStatus(UUID incidentId, IncidentStatus status);
+    List<Incident>findAllMyIncidents();
+    List<Incident> findAllIncidentsByUserId(UUID userId);
 
 }
