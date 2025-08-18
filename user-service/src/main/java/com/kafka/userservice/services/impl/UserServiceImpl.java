@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
            newUser.setUserName(userDto.getUserName());
            newUser.setEmail(userDto.getEmail());
            newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-           newUser.setRoles(List.of(role));
+            newUser.setRoles(new ArrayList<>(List.of( )));
            newUser.setPhoto(userDto.getPhoto());
            newUser.setAuthProvider(AuthProvider.LOCAL);
 
@@ -131,7 +132,7 @@ public class UserServiceImpl implements UserService {
                 user.setEmail(userDto.getEmail());
                 user.setPhoto(userDto.getPhoto());
                 user.setAuthProvider(AuthProvider.GOOGLE_PROVIDER);
-                user.setRoles(List.of(role));
+                user.setRoles(new ArrayList<>(List.of(role)));
                 user = userRepository.save(user);
                 incidentAuditPublisher.publishAuditEvent(user, KafkaEventTypes.USER_REGISTERED, user.getId());
             }
@@ -183,14 +184,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePhoto(MultipartFile photoFile, String email) {
         try{
-            var user = userRepository.findByEmail(email);
+            User user = userRepository.findByEmail(email);
             if(user == null)
                 throw new Exception("El usuario no existe");
 
             String photoUrl = cloudinaryService.uploadFile(photoFile, user.getUserName());
             user.setPhoto(photoUrl);
+
             userRepository.save(user);
         }catch (Exception e){
+            e.printStackTrace();
             throw new RuntimeException("Error al actualizar la foto de perfil: " + e.getMessage());
         }
     }
