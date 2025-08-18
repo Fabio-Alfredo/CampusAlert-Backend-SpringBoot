@@ -83,14 +83,13 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     @Override
-    public Incident updateStatus(UUID incidentId, String status) {
+    public Incident updateStatus(UUID incidentId, IncidentStatus status) {
         try{
             var incident = incidentRepository.findById(incidentId).orElse(null);
             if(incident == null)
                 throw new RuntimeException("Incident not found");
 
-            IncidentStatus validStatus = IncidentStatus.fromString(status);
-            incident.setIncidentStatus(validStatus);
+            incident.setIncidentStatus(status);
 
             var user = authService.findAuthenticatedUser();
             var updatingIncident = incidentRepository.save(incident);

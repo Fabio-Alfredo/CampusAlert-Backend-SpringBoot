@@ -13,6 +13,6 @@ public interface IncidentService {
     void createIncident(RegisterIncidentDto incidentDto, UserDto user);
     List<Incident>findAllIncidents();
     Incident assignSecurityInIncident(UUID security, UUID incidentId);
-    Incident updateStatus(UUID incidentId, String status);
+    Incident updateStatus(UUID incidentId, IncidentStatus status);
 
 }

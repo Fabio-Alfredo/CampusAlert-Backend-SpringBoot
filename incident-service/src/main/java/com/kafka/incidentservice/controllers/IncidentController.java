@@ -2,7 +2,10 @@ package com.kafka.incidentservice.controllers;
 
 import com.kafka.incidentservice.domain.dtos.auth.UserDto;
 import com.kafka.incidentservice.domain.dtos.common.GeneralResponse;
+import com.kafka.incidentservice.domain.dtos.incident.AssignSecurityDto;
 import com.kafka.incidentservice.domain.dtos.incident.RegisterIncidentDto;
+import com.kafka.incidentservice.domain.dtos.incident.UpdateStatusDto;
+import com.kafka.incidentservice.domain.enums.IncidentStatus;
 import com.kafka.incidentservice.domain.models.Incident;
 import com.kafka.incidentservice.services.contract.IAuthService;
 import com.kafka.incidentservice.services.contract.IncidentService;
@@ -49,11 +52,10 @@ public class IncidentController {
     }
 
     @PutMapping("/assign-security")
-    public ResponseEntity<GeneralResponse>assignSecurityInIncident(@RequestParam("securityId") UUID securityId,
-                                                                    @RequestParam("incidentId") UUID incidentId){
+    public ResponseEntity<GeneralResponse>assignSecurityInIncident(@RequestBody @Valid AssignSecurityDto assignSecurityDto){
         try{
 
-            var incident = incidentService.assignSecurityInIncident(securityId, incidentId);
+            var incident = incidentService.assignSecurityInIncident(assignSecurityDto.getSecurityId(), assignSecurityDto.getIncidentId());
             return GeneralResponse.getResponse(HttpStatus.OK, "Security assigned to incident successfully", incident);
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error assigning security: " + e.getMessage() + " Please try again later.");
@@ -61,10 +63,10 @@ public class IncidentController {
     }
 
     @PutMapping("/update-status")
-    public ResponseEntity<GeneralResponse>updateStatusToIncident(@RequestParam("status") String status,
-                                                                 @RequestParam("incidentId") UUID incidentId){
+    public ResponseEntity<GeneralResponse>updateStatusToIncident(@RequestBody @Valid UpdateStatusDto updateStatusDto){
         try{
-            var incident = incidentService.updateStatus(incidentId, status);
+            var status = IncidentStatus.fromString(updateStatusDto.getStatus());
+            var incident = incidentService.updateStatus(updateStatusDto.getIncidentId(), status);
             return GeneralResponse.getResponse(HttpStatus.OK, "New Status assigned to incident is successfully", incident);
         }catch (Exception e){
             return GeneralResponse.getResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error assigning new status: " + e.getMessage() + " Please try again later.");
