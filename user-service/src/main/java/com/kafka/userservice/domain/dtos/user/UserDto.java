@@ -1,15 +1,27 @@
 package com.kafka.userservice.domain.dtos.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kafka.userservice.domain.enums.AuthProvider;
+import com.kafka.userservice.domain.models.User;
 
+import java.util.List;
 import java.util.UUID;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
     private UUID id;
     private String userName;
     private String email;
-    private UUID updatingBy;
+    private String photo;
+    private List<String> roles;
+    private AuthProvider authProvider;
+
+    public UserDto(User user) {
+        this.id = user.getId();
+        this.userName = user.getUserName();
+        this.email = user.getEmail();
+        this.photo = user.getPhoto();
+        this.roles = user.getRoles().stream().map(role -> role.getName()).toList();
+        this.authProvider = user.getAuthProvider();
+    }
 
     public UUID getId() {
         return id;
@@ -35,11 +47,27 @@ public class UserDto {
         this.email = email;
     }
 
-    public UUID getUpdatingBy() {
-        return updatingBy;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setUpdatingBy(UUID updatingBy) {
-        this.updatingBy = updatingBy;
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
     }
 }

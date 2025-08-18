@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
            newUser.setUserName(userDto.getUserName());
            newUser.setEmail(userDto.getEmail());
            newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-            newUser.setRoles(new ArrayList<>(List.of( )));
+            newUser.setRoles(new ArrayList<>(List.of(role)));
            newUser.setPhoto(userDto.getPhoto());
            newUser.setAuthProvider(AuthProvider.LOCAL);
 

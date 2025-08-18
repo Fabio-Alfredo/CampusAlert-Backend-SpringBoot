@@ -2,7 +2,7 @@ package com.kafka.userservice.services.impl;
 
 import com.kafka.userservice.domain.dtos.auth.UserRegisterAuditDto;
 import com.kafka.userservice.domain.dtos.commons.KafkaEvents;
-import com.kafka.userservice.domain.dtos.user.UserDto;
+import com.kafka.userservice.domain.dtos.user.UserEventDto;
 import com.kafka.userservice.domain.enums.KafkaEventTypes;
 import com.kafka.userservice.domain.models.User;
 import com.kafka.userservice.services.contract.UserAuditPublisher;
@@ -32,7 +32,7 @@ public class UserAuditPublisherImpl implements UserAuditPublisher {
         try{
             UserRegisterAuditDto auditDto = new UserRegisterAuditDto();
 
-            UserDto userDto = mapperTools.convertTo(user, UserDto.class);
+            UserEventDto userDto = mapperTools.convertTo(user, UserEventDto.class);
             userDto.setUpdatingBy(editedBy);
             auditDto.setPayload(mapperTools.convertToString(userDto));
             auditDto.setEventType(action);
