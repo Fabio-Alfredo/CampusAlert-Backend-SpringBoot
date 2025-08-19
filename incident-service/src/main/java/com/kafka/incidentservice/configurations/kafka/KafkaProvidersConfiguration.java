@@ -2,6 +2,7 @@ package com.kafka.incidentservice.configurations.kafka;
 
 import com.kafka.incidentservice.domain.dtos.common.KafkaEvents;
 import com.kafka.incidentservice.domain.dtos.incident.AuditIncidentDto;
+import com.kafka.incidentservice.domain.dtos.incident.IncidentNotificationDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +15,6 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Configuration
 public class KafkaProvidersConfiguration {
@@ -44,13 +44,25 @@ public class KafkaProvidersConfiguration {
         return properties;
     }
 
+    // Para topic de auditoría de incidentes
     @Bean
-    ProducerFactory<String, KafkaEvents<AuditIncidentDto>>incidentProducerFactory(){
+    ProducerFactory<String, KafkaEvents<AuditIncidentDto>> auditProducerFactory(){
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
     @Bean
-    KafkaTemplate<String, KafkaEvents<AuditIncidentDto>>incidentKafkaTemplate(ProducerFactory<String, KafkaEvents<AuditIncidentDto>> producerFactory){
+    KafkaTemplate<String, KafkaEvents<AuditIncidentDto>> auditKafkaTemplate(ProducerFactory<String, KafkaEvents<AuditIncidentDto>> producerFactory){
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    // Para topic de notificaciones de incidentes
+    @Bean
+    ProducerFactory<String, KafkaEvents<IncidentNotificationDto>>notificationProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfig());
+    }
+
+    @Bean
+    KafkaTemplate<String, KafkaEvents<IncidentNotificationDto>> notificationKafkaTemplate(ProducerFactory<String, KafkaEvents<IncidentNotificationDto>> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }

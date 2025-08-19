@@ -43,6 +43,7 @@ public class IncidentServiceImpl implements IncidentService {
             incidentRepository.save(incident);
 
             incidentAuditPublisher.publishAuditEvent(incident, KafkaEventTypes.REGISTER_INCIDENT, user.getId());
+            incidentAuditPublisher.notifyEvents(incident, KafkaEventTypes.NOTIFY_NEW_INCIDENT, user.getEmail());
         }catch (Exception e) {
             throw new RuntimeException("Error creating incident: " + e.getMessage(), e);
         }

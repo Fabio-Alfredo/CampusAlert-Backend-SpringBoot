@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface IncidentAuditPublisher {
     void publishAuditEvent(Incident incident, KafkaEventTypes action, UUID editedBy);
+    void notifyEvents(Incident incident, KafkaEventTypes action, String editedBy);
 }

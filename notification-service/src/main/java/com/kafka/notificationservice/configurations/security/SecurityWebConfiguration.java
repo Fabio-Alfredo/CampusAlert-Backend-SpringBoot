@@ -1,7 +1,6 @@
-package com.kafka.notificationservice.configurations;
+package com.kafka.notificationservice.configurations.security;
 
 import com.kafka.notificationservice.utils.security.AuthFilterTools;
-import jakarta.servlet.FilterChain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

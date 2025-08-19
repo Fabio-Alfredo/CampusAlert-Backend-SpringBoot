@@ -14,5 +14,10 @@
       "name": "kafka.topic.incident-and-audit.name",
       "type": "java.lang.String",
       "description": "Description for kafka.topic.incident-and-audit.name."
+    },
+    {
+      "name": "kafka.topic.incident-and-notification.name",
+      "type": "java.lang.String",
+      "description": "Description for kafka.topic.incident-and-notification.name."
     }
   ] }
