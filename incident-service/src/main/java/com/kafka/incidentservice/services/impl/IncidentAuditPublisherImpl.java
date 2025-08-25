@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -53,8 +54,10 @@ public class IncidentAuditPublisherImpl implements IncidentAuditPublisher {
     public void notifyEvents(Incident incident, KafkaEventTypes action, String editedBy) {
         try{
             IncidentNotificationDto notificationDto = new IncidentNotificationDto();
-            notificationDto.setIncidentId(incident.getId());
             notificationDto.setEmail(editedBy);
+            notificationDto.setEventType(action.name());
+            notificationDto.setMessage("Incident with ID %s has been %s".formatted(incident.getId(), action.name().toLowerCase().replace("_", " ")));
+            notificationDto.setMetadata(Map.of("incidentId", incident.getId()));
 
             notificationKafkaTemplate.send(incidentNotificationTopic, new KafkaEvents<>(action, notificationDto));
         }catch (Exception e){
